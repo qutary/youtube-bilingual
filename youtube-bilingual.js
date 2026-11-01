@@ -1,4 +1,4 @@
-/* YouTube bilingual captions for Quantumult X; v1.1.0-TestBlock.1; isolated experimental branch, not the stable subscription */
+/* YouTube bilingual captions for Quantumult X; v1.1.0-TestBlock.2; isolated experimental branch, not the stable subscription */
 (function () {
   "use strict";
   var input = String(($response && $response.body) || "");
@@ -45,69 +45,10 @@
     return out;
   }
   function renderStyledSrv3(xml, nodes, rows, translations) {
-    // TEST_LAYOUT affects only this test build. Stable preferences/caches are not written.
-    // Actual iPad centering, line height and wrapping still need device verification.
-    if(pref("TEST_LAYOUT","block")==="dual") return renderDualSrv3(xml,nodes,rows,translations);
-    return renderBlockSrv3(xml,nodes,rows,translations);
-  }
-  function renderBlockSrv3(xml, nodes, rows, translations) {
-    if (!/<timedtext\b[^>]*\bformat\s*=\s*["']3["']/i.test(xml) || !/<body\b/i.test(xml)) return null;
-    if (!nodes.length) return null;
-    var hasBilingual=translations.some(function(t,i){return t&&rows[i]&&String(t).trim()!==rows[i].text;});
-    if(!hasBilingual) return xml;
-    function newId(tag) {
-      var pattern=new RegExp("<"+tag+"\\b[^>]*\\bid\\s*=\\s*[\\\"'](\\d+)[\\\"']","gi"),found,max=-1;
-      while((found=pattern.exec(xml)))max=Math.max(max,Number(found[1]));
-      return max+1;
-    }
-    var wp=newId("wp"),ws=newId("ws"),pen=newId("pen");
-    var styles='<wp id="'+wp+'" ap="7" ah="50" av="95"/>'+
-      '<ws id="'+ws+'" ju="2" mh="0"/>'+
-      '<pen id="'+pen+'" sz="110"/>'+
-      '<pen id="'+(pen+1)+'" sz="99"/>';
-    // Keep exactly the stable duration-trimming rule; do not resegment or retime speech.
-    var times=nodes.map(function(node){
-      var a=node.open.match(/\bt\s*=\s*["'](\d+)["']/i);
-      var b=node.open.match(/\bd\s*=\s*["'](\d+)["']/i);
-      return {start:a?Number(a[1]):null,duration:b?Number(b[1]):null};
-    });
-    var out=xml,shortened=0,bilingual=0,positioned=0,inheritedRemoved=0;
-    for(var i=nodes.length-1;i>=0;i--){
-      var n=nodes[i],op=n.open,cur=times[i],next=times[i+1];
-      if(next&&cur.start!==null&&cur.duration!==null&&next.start!==null&&
-         next.start>cur.start&&cur.start+cur.duration>next.start){
-        var dur=Math.max(1,next.start-cur.start-20);
-        if(dur<cur.duration){op=op.replace(/\bd\s*=\s*["']\d+["']/i,'d="'+dur+'"');shortened++;}
-      }
-      inheritedRemoved+=(op.match(/\s+(?:w|a)\s*=\s*(?:"[^"]*"|'[^']*')/gi)||[]).length;
-      op=op.replace(/\s+(?:wp|ws|w|a)\s*=\s*(?:"[^"]*"|'[^']*')/gi,"");
-      var replacement;
-      if(translations[i]&&String(translations[i]).trim()!==rows[i].text){
-        // Explicit paragraph pen also controls the separator's inherited metrics.
-        // Keep English plain-text reconstruction identical to the stable build.
-        op=op.replace(/\s+p\s*=\s*(?:"[^"]*"|'[^']*')/gi,"");
-        op=op.replace(/>$/,' wp="'+wp+'" ws="'+ws+'" p="'+pen+'">');
-        var zh=String(translations[i]).trim().replace(/\s+/g," ");
-        // SRV3 uses a literal LF between styled spans, not HTML <br> or U+2028.
-        replacement=op+'<s p="'+pen+'">'+encode(zh)+'</s>\n'+
-          '<s p="'+(pen+1)+'">'+encode(rows[i].text)+'</s>'+n.close;
-        bilingual++;
-      }else{
-        op=op.replace(/>$/,' wp="'+wp+'" ws="'+ws+'">');
-        replacement=op+xml.slice(n.from+n.open.length,n.to-n.close.length)+n.close;
-      }
-      out=out.slice(0,n.from)+replacement+out.slice(n.to);
-      positioned++;
-    }
-    if(/<\/head\s*>/i.test(out))out=out.replace(/<\/head\s*>/i,styles+'</head>');
-    else out=out.replace(/<body\b/i,'<head>'+styles+'</head><body');
-    log("SRV3 TEST block: "+bilingual+" bilingual blocks; "+positioned+" cues positioned; "+
-      shortened+" overlaps trimmed; "+inheritedRemoved+" inherited window/append attributes stripped; device centering unverified");
-    return out;
-  }
-  function renderDualSrv3(xml, nodes, rows, translations) {
-    // Each language gets its own centered SRV3 window. In the iPad YouTube renderer,
-    // a Unicode line separator inside ONE <p> does not independently center visual lines.
+    // TestBlock.1 device result: a single paragraph joined both languages inline.
+    // Always use separate windows, even if old TEST_LAYOUT still says "block".
+    // SRV3 sz is not a CSS percentage. English 140 is an iPad visual-calibration
+    // candidate toward 90% apparent size, not a verified physical size ratio.
     if (!/<timedtext\b[^>]*\bformat\s*=\s*["']3["']/i.test(xml) || !/<body\b/i.test(xml)) return null;
     if (!nodes.length) return null;
     var hasBilingual = translations.some(function(t,i){
@@ -121,12 +62,21 @@
       return max+1;
     }
     var zhWP=newId("wp"), enWP=zhWP+1, ws=newId("ws"), pen=newId("pen");
+    var zhSize=110,enSize=140;
+    function englishSpans(inner){
+      // Preserve source text, hard breaks and per-word timing; standardize its pen.
+      return inner.replace(/<s\b[^>]*>/gi,function(span){
+        if(/\/>$/.test(span))return span;
+        return span.replace(/\s+p\s*=\s*(?:"[^"]*"|'[^']*')/gi,"")
+          .replace(/>$/,' p="'+(pen+1)+'">');
+      });
+    }
     var styles =
       '<wp id="'+zhWP+'" ap="7" ah="50" av="88"/>' +
       '<wp id="'+enWP+'" ap="7" ah="50" av="95"/>' +
       '<ws id="'+ws+'" ju="2" mh="0"/>' +
-      '<pen id="'+pen+'" sz="110"/>' +
-      '<pen id="'+(pen+1)+'" sz="99"/>';
+      '<pen id="'+pen+'" sz="'+zhSize+'"/>' +
+      '<pen id="'+(pen+1)+'" sz="'+enSize+'"/>';
     // Prevent accumulated roll-up captions; no changes to cue start times.
     var times=nodes.map(function(node) {
       var a=node.open.match(/\bt\s*=\s*["'](\d+)["']/i);
@@ -149,30 +99,30 @@
       // on mobile, effectively merging the two language windows into left-aligned text.
       var inherited=(op.match(/\s+(?:w|a)\s*=\s*(?:"[^"]*"|'[^']*')/gi)||[]);
       inheritedRemoved+=inherited.length;
-      op=op.replace(/\s+(?:wp|ws|w|a)\s*=\s*(?:"[^"]*"|'[^']*')/gi,"");
-      var enOpen=op.replace(/>$/,' wp="'+enWP+'" ws="'+ws+'">');
+      op=op.replace(/\s+(?:wp|ws|w|a|p)\s*=\s*(?:"[^"]*"|'[^']*')/gi,"");
+      var enOpen=op.replace(/>$/,' wp="'+enWP+'" ws="'+ws+'" p="'+(pen+1)+'">');
       var replacement;
       if(translations[i] && String(translations[i]).trim()!==rows[i].text) {
         var zh=String(translations[i]).trim(), english=rows[i].text;
         // One fixed vertical anchor for EVERY Chinese cue, including long wrapping.
-        var zhOpen=op.replace(/>$/,' wp="'+zhWP+'" ws="'+ws+'">');
+        var zhOpen=op.replace(/>$/,' wp="'+zhWP+'" ws="'+ws+'" p="'+pen+'">');
         replacement=
           zhOpen+'<s p="'+pen+'">'+encode(zh)+'</s>'+n.close+
           enOpen+'<s p="'+(pen+1)+'">'+encode(english)+'</s>'+n.close;
         bilingual++;
       } else {
-        // Existing source-language cue remains untouched apart from center window/time trim.
+        // Untranslated English keeps its content/timing/breaks and gets the same font pen.
         var originalInner=xml.slice(n.from+n.open.length,n.to-n.close.length);
-        replacement=enOpen+originalInner+n.close;
+        replacement=enOpen+englishSpans(originalInner)+n.close;
       }
       out=out.slice(0,n.from)+replacement+out.slice(n.to);
       centered++;
     }
     if(/<\/head\s*>/i.test(out))out=out.replace(/<\/head\s*>/i,styles+'</head>');
     else out=out.replace(/<body\b/i,'<head>'+styles+'</head><body');
-    log("SRV3 dual windows: "+bilingual+" pairs centered individually; "+
+    log("SRV3 TEST dual: zhSz="+zhSize+", enSz="+enSize+"; "+bilingual+" pairs centered individually; "+
       centered+" original cues positioned; "+shortened+" overlaps trimmed; "+
-      inheritedRemoved+" inherited window/append attributes stripped");
+      inheritedRemoved+" inherited window/append attributes stripped; target visual English ratio=0.90, device calibration pending");
     return out;
   }
   function parser(body) {
@@ -420,7 +370,7 @@
     var responseHeaders=($response && $response.headers) || {};
     var contentType=String(responseHeaders["Content-Type"] || responseHeaders["content-type"] || "unknown").split(";")[0];
     var responseStatus=Number(($response && $response.statusCode) || 0);
-    log("v1.1.0-TestBlock.1 timedtext intercepted; layout="+(pref("TEST_LAYOUT","block")==="dual"?"dual":"block")+"; origin status="+(responseStatus||"unknown")+
+    log("v1.1.0-TestBlock.2 timedtext intercepted; layout=dual; origin status="+(responseStatus||"unknown")+
       "; content-type="+contentType+"; body length="+input.length);
     // An origin error or HTML response cannot be translated; preserve it without extra requests.
     if(responseStatus && (responseStatus<200 || responseStatus>=300)){
@@ -437,7 +387,7 @@
     var src=parser(input);
     if(!src||!src.rows.length){log("Unsupported or empty timedtext body; original preserved");return finish(input);}
     var key=pref("DEEPSEEK_KEY",""), hasKey=key.indexOf("sk-")===0 && key.length>8 && key.indexOf(" ")===-1;
-    log("v1.1.0-TestBlock.1 provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
+    log("v1.1.0-TestBlock.2 provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
     if(!hasKey){
       log("No DeepSeek API key in local QX prefs; original captions returned; no automatic YouTube translation");
       return finish(input);
