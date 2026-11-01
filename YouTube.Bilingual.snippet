@@ -1,10 +1,10 @@
-#!name=YouTube Bilingual Subtitles · DeepSeek
-#!desc=在 iPad 原生 YouTube 中显示 DeepSeek 翻译的中英双语字幕：中文在上、英文在下；支持自适应并发、8秒翻译预算、缓存补翻。需自备 DeepSeek API Key，长视频不保证一次全量翻译。
+#!name=YouTube Bilingual Subtitles · 测试版 TestBlock.1
+#!desc=独立测试：同窗中英字幕与更自然的中文表达；8秒预算、DeepSeek、并发保留。正式版不受覆盖；测试时请停用正式版字幕重写，仅启用此项。iPad排版待实机验证。
 #!author=qutary
-#!homepage=https://github.com/qutary/youtube-bilingual-subtitles
+#!homepage=https://github.com/qutary/youtube-bilingual-subtitles/tree/test-block-v1
 
-# Quantumult X → 重写 → 引用：只启用这一条订阅
+# 与正式版二选一启用；保留正式订阅即可，不要删除。
 hostname = www.youtube.com, m.youtube.com, music.youtube.com, video.google.com
 
-^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/youtube-bilingual.js
-^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/youtube-bilingual.js
+^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/test-block-v1/youtube-bilingual.js
+^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/test-block-v1/youtube-bilingual.js
