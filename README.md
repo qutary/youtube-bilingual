@@ -33,7 +33,7 @@ YouTube Bilingual Subtitles 是一款面向 **Quantumult X** 的轻量级字幕�
 在 **Quantumult X → 重写 → 引用** 中添加：
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitl/main/YouTube.Bilingual.snippet
+https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/YouTube.Bilingual.snippet
 ```
 
 这是**唯一维护的订阅地址**。如果安装过其他 YouTube 字幕重写，先停用冲突规则，避免同一字幕响应被重复处理。
@@ -128,4 +128,4 @@ qx-youtube-bilingual/
 
 欢迎分享给同样希望在 **iPad 原生 YouTube** 中观看中英双语字幕的用户。代码公开可查看和学习，但实际体验仍取决于 YouTube 字幕接口、Quantumult X 的网络环境以及 DeepSeek API 的性能与额度。
 
-[项目主页](https://github.com/qutary/youtube-bilingual-subtitl) · [DeepSeek API](https://platform.deepseek.com/)
+[项目主页](https://github.com/qutary/youtube-bilingual-subtitles) · [DeepSeek API](https://platform.deepseek.com/)
