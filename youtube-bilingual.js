@@ -1,4 +1,4 @@
-/* YouTube bilingual captions for Quantumult X; v1.1.0-TestBlock.3; isolated experimental branch, not the stable subscription */
+/* YouTube bilingual captions for Quantumult X; v1.1.0-TestBlock.4; isolated experimental branch, not the stable subscription */
 (function () {
   "use strict";
   var input = String(($response && $response.body) || "");
@@ -45,14 +45,11 @@
     return out;
   }
   function renderStyledSrv3(xml, nodes, rows, translations) {
-    // TestBlock.1 device result: a single paragraph joined both languages inline.
-    // Always use separate windows, even if old TEST_LAYOUT still says "block".
-    // TestBlock.2 device result: a two-line bottom-anchored English box grew
-    // upward into Chinese. Keep Chinese bottom=88; anchor English TOP at 90.
-    // English now grows downward if the native player honors these anchors.
-    // Three-line clipping/native safety-area repositioning still need device QA.
-    // SRV3 sz is not a CSS percentage. English 140 is an iPad visual-calibration
-    // candidate toward 90% apparent size, not a verified physical size ratio.
+    // TestBlock.1 placed LF BETWEEN spans: XML readers can classify it as
+    // insignificant whitespace. Keep this LF INSIDE a styled text node instead.
+    // A single paragraph lets the renderer lay out the whole bilingual block.
+    // The zero-width text between spans follows the YTSubConverter multi-span
+    // pen-preservation workaround. Actual iPad centering still needs device QA.
     if (!/<timedtext\b[^>]*\bformat\s*=\s*["']3["']/i.test(xml) || !/<body\b/i.test(xml)) return null;
     if (!nodes.length) return null;
     var hasBilingual = translations.some(function(t,i){
@@ -65,7 +62,7 @@
       while((found=pattern.exec(xml)))max=Math.max(max,Number(found[1]));
       return max+1;
     }
-    var zhWP=newId("wp"), enWP=zhWP+1, ws=newId("ws"), pen=newId("pen");
+    var blockWP=newId("wp"), ws=newId("ws"), pen=newId("pen");
     var zhSize=110,enSize=140;
     function englishSpans(inner){
       // Preserve source text, hard breaks and per-word timing; standardize its pen.
@@ -76,8 +73,7 @@
       });
     }
     var styles =
-      '<wp id="'+zhWP+'" ap="7" ah="50" av="88"/>' +
-      '<wp id="'+enWP+'" ap="1" ah="50" av="90"/>' +
+      '<wp id="'+blockWP+'" ap="7" ah="50" av="95"/>' +
       '<ws id="'+ws+'" ju="2" mh="0"/>' +
       '<pen id="'+pen+'" sz="'+zhSize+'"/>' +
       '<pen id="'+(pen+1)+'" sz="'+enSize+'"/>';
@@ -104,15 +100,15 @@
       var inherited=(op.match(/\s+(?:w|a)\s*=\s*(?:"[^"]*"|'[^']*')/gi)||[]);
       inheritedRemoved+=inherited.length;
       op=op.replace(/\s+(?:wp|ws|w|a|p)\s*=\s*(?:"[^"]*"|'[^']*')/gi,"");
-      var enOpen=op.replace(/>$/,' wp="'+enWP+'" ws="'+ws+'" p="'+(pen+1)+'">');
+      var enOpen=op.replace(/>$/,' wp="'+blockWP+'" ws="'+ws+'" p="'+(pen+1)+'">');
       var replacement;
       if(translations[i] && String(translations[i]).trim()!==rows[i].text) {
-        var zh=String(translations[i]).trim(), english=rows[i].text;
-        // One fixed vertical anchor for EVERY Chinese cue, including long wrapping.
-        var zhOpen=op.replace(/>$/,' wp="'+zhWP+'" ws="'+ws+'" p="'+pen+'">');
-        replacement=
-          zhOpen+'<s p="'+pen+'">'+encode(zh)+'</s>'+n.close+
-          enOpen+'<s p="'+(pen+1)+'">'+encode(english)+'</s>'+n.close;
+        var zh=String(translations[i]).trim().replace(/\s+/g," "), english=rows[i].text;
+        var blockOpen=op.replace(/>$/,' wp="'+blockWP+'" ws="'+ws+'" p="'+pen+'">');
+        // &#10; belongs to the FIRST span's text. Do not move it between tags.
+        replacement=blockOpen+
+          '<s p="'+pen+'">'+encode(zh)+'&#10;</s>&#8203;'+
+          '<s p="'+(pen+1)+'">'+encode(english)+'</s>'+n.close;
         bilingual++;
       } else {
         // Untranslated English keeps its content/timing/breaks and gets the same font pen.
@@ -124,9 +120,9 @@
     }
     if(/<\/head\s*>/i.test(out))out=out.replace(/<\/head\s*>/i,styles+'</head>');
     else out=out.replace(/<body\b/i,'<head>'+styles+'</head><body');
-    log("SRV3 TEST split-anchor: zhBottom=88, enTop=90; zhSz="+zhSize+", enSz="+enSize+"; "+bilingual+" pairs centered individually; "+
+    log("SRV3 TEST text-break: blockBottom=95; zhSz="+zhSize+", enSz="+enSize+"; "+bilingual+" bilingual paragraphs with internal text LF; "+
       centered+" original cues positioned; "+shortened+" overlaps trimmed; "+
-      inheritedRemoved+" inherited window/append attributes stripped; target visual English ratio=0.90, device calibration pending");
+      inheritedRemoved+" inherited window/append attributes stripped; native line centering pending device verification");
     return out;
   }
   function parser(body) {
@@ -374,7 +370,7 @@
     var responseHeaders=($response && $response.headers) || {};
     var contentType=String(responseHeaders["Content-Type"] || responseHeaders["content-type"] || "unknown").split(";")[0];
     var responseStatus=Number(($response && $response.statusCode) || 0);
-    log("v1.1.0-TestBlock.3 timedtext intercepted; layout=split-anchor; origin status="+(responseStatus||"unknown")+
+    log("v1.1.0-TestBlock.4 timedtext intercepted; layout=text-break; origin status="+(responseStatus||"unknown")+
       "; content-type="+contentType+"; body length="+input.length);
     // An origin error or HTML response cannot be translated; preserve it without extra requests.
     if(responseStatus && (responseStatus<200 || responseStatus>=300)){
@@ -391,7 +387,7 @@
     var src=parser(input);
     if(!src||!src.rows.length){log("Unsupported or empty timedtext body; original preserved");return finish(input);}
     var key=pref("DEEPSEEK_KEY",""), hasKey=key.indexOf("sk-")===0 && key.length>8 && key.indexOf(" ")===-1;
-    log("v1.1.0-TestBlock.3 provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
+    log("v1.1.0-TestBlock.4 provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
     if(!hasKey){
       log("No DeepSeek API key in local QX prefs; original captions returned; no automatic YouTube translation");
       return finish(input);
