@@ -67,7 +67,7 @@
     var zhAnchors=[88,80,70,60,50];
     var zhWP=newId("wp"), enWP=zhWP+zhAnchors.length, ws=newId("ws"), pen=newId("pen");
     function englishLineTier(text) {
-      var normalized=String(text||"").replace(/\\s+/g," ").trim();
+      var normalized=String(text||"").replace(/\s+/g," ").trim();
       // Conservative estimate for native iPad YouTube fonts/line wrapping.
       // It intentionally favours extra separation instead of collisions.
       return Math.min(zhAnchors.length,Math.max(1,Math.ceil(normalized.length/44)));
