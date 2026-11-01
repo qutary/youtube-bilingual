@@ -8,7 +8,7 @@ YouTube Bilingual Subtitles 是一款面向 **Quantumult X** 的轻量级字幕�
 
 > **适用平台：** iPad · YouTube 原生 App · Quantumult X  
 > **翻译引擎：** DeepSeek API（自备 Key）  
-> **当前版本：** `v1.0.3-FullTrack`（自适应并发 / 8 秒翻译预算）  
+> **当前版本：** `v1.1.0-FullTrack`（段内双语排版 / 自适应并发 / 8 秒翻译预算）  
 > **说明：** 这是非官方第三方项目，与 YouTube、Google、DeepSeek、Quantumult X 官方无隶属关系。
 
 ## ✨ 主要功能
@@ -18,7 +18,9 @@ YouTube Bilingual Subtitles 是一款面向 **Quantumult X** 的轻量级字幕�
 - **尽可能翻译整条字幕轨道**：不再只处理视频开头的少量字幕；能否一次完成整条轨道取决于响应时间。
 - **自适应并发**：根据字幕轨道大小调整 DeepSeek 请求数量，在覆盖率与加载速度之间取得平衡。
 - **本地缓存与失败回退**：保存已完成译文；再次请求同一字幕时复用缓存，失败或超时的部分保留英文。
-- **字幕清理与排版**：过滤音乐、掌声等非对话标记，采用双窗口呈现，英文使用相对更小的字号参数。
+- **字幕清理与排版**：过滤音乐、掌声等明确的非对话标记；中英文在同一字幕段落内上下分行，由播放器统一计算换行和行距，分别设置字号。
+
+**v1.1.0 排版更新：** 采用样式文字内部的有效换行，将中英文放在同一字幕块内。已通过用户 iPad 的单行和英文双行画面验证，减少此前独立窗口造成的间距漂移。不同画幅、系统字幕样式及极长字幕仍可能影响显示，不能保证所有视频都完全一致。
 
 **仅使用 DeepSeek 进行翻译**。没有设置有效 API Key 时，直接保留原有英文字幕，不会自动切换成 YouTube 机器翻译。
 
@@ -37,6 +39,12 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/YouTub
 ```
 
 这是**唯一维护的订阅地址**。如果安装过其他 YouTube 字幕重写，先停用冲突规则，避免同一字幕响应被重复处理。
+
+### 已安装用户升级
+
+更新上面的正式订阅并获取新脚本，完全退出并重开 YouTube 即可，Key 无需重设。若此前启用了测试订阅，请关闭或删除它，再启用正式订阅；同一字幕响应只启用一份重写。
+
+本版能兼容读取此前已完成的测试译文，并迁入正式缓存，无需主动清理缓存。旧正式版的缓存保留，但不直接混入本版，以免沿用旧提示词的结果。没有可复用译文的字幕会正常调用 DeepSeek，产生相应费用。
 
 ### ② 保存 DeepSeek API Key
 
@@ -84,13 +92,14 @@ DeepSeek 分批并发翻译
 
 ## 📊 iPad 实机测试
 
-以下数据来自 Quantumult X 日志，不是模拟结果：
+以下数据来自 Quantumult X 日志，不是模拟结果。前几项为已有翻译链路记录；新增442条记录是本次排版验证时的缓存命中，不能当作442条首次翻译耗时成绩：
 
 | 测试字幕轨道 | 已翻译条数 | DeepSeek 请求 | 备注 |
 |---|---:|---:|---|
 | A | 252 / 252 | 13 次 | 全部翻译 |
 | B | 325 / 326 | 15 次 | 其余 1 条为纯音效字幕 |
 | 缓存补翻 | 164 / 188 → 188 / 188 | 两次加载 | 证明缓存补翻有效 |
+| 新排版验证 | 442 / 442 | 本次全部命中缓存 | 用户确认单行与英文双行的中英上下排版可用 |
 
 这些是特定视频和网络条件下的测试，**不构成速度、费用或翻译完整率保证**。
 
@@ -103,7 +112,7 @@ DeepSeek 分批并发翻译
 先临时关闭重写，确认原生英文字幕是否正常。若日志显示 `origin status=429`，意味着上游 YouTube 字幕接口返回了限制响应，而不是 DeepSeek 已翻译失败。若字幕源返回 HTTP 200，再检查冲突规则、脚本版本及截止日志。
 
 **怎样确认它已经运行？**  
-打开 Quantumult X「日志」，搜索 `[QXYTB]`、`v1.0.3-FullTrack` 以及 `FullTrack finished: translated=.../...`。
+打开 Quantumult X「日志」，搜索 `[QXYTB]`、`v1.1.0-FullTrack` 以及 `SRV3 bilingual block: ...`。发生新翻译时还会显示 `FullTrack finished: translated=.../...`；全量缓存命中时显示 `FullTrack cache complete or sound-only: ...`。
 
 **使用需要付费吗？**  
 需要自行承担 DeepSeek API 的 token 费用。字幕越长、重试越多，请求与费用通常越高；以 DeepSeek 官方定价与账户余额为准。
@@ -115,7 +124,7 @@ DeepSeek 分批并发翻译
 ## 📁 项目文件
 
 ```text
-qx-youtube-bilingual/
+youtube-bilingual-subtitles/
 ├── YouTube.Bilingual.snippet    # Quantumult X 远程重写订阅
 ├── youtube-bilingual.js         # 核心字幕翻译脚本
 ├── set-deepseek-local.js        # 本地 API Key 设置模板（可选）
