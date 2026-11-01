@@ -1,4 +1,4 @@
-/* YouTube bilingual captions for Quantumult X; v1.1.0-TestBlock.2; isolated experimental branch, not the stable subscription */
+/* YouTube bilingual captions for Quantumult X; v1.1.0-TestBlock.3; isolated experimental branch, not the stable subscription */
 (function () {
   "use strict";
   var input = String(($response && $response.body) || "");
@@ -47,6 +47,10 @@
   function renderStyledSrv3(xml, nodes, rows, translations) {
     // TestBlock.1 device result: a single paragraph joined both languages inline.
     // Always use separate windows, even if old TEST_LAYOUT still says "block".
+    // TestBlock.2 device result: a two-line bottom-anchored English box grew
+    // upward into Chinese. Keep Chinese bottom=88; anchor English TOP at 90.
+    // English now grows downward if the native player honors these anchors.
+    // Three-line clipping/native safety-area repositioning still need device QA.
     // SRV3 sz is not a CSS percentage. English 140 is an iPad visual-calibration
     // candidate toward 90% apparent size, not a verified physical size ratio.
     if (!/<timedtext\b[^>]*\bformat\s*=\s*["']3["']/i.test(xml) || !/<body\b/i.test(xml)) return null;
@@ -73,7 +77,7 @@
     }
     var styles =
       '<wp id="'+zhWP+'" ap="7" ah="50" av="88"/>' +
-      '<wp id="'+enWP+'" ap="7" ah="50" av="95"/>' +
+      '<wp id="'+enWP+'" ap="1" ah="50" av="90"/>' +
       '<ws id="'+ws+'" ju="2" mh="0"/>' +
       '<pen id="'+pen+'" sz="'+zhSize+'"/>' +
       '<pen id="'+(pen+1)+'" sz="'+enSize+'"/>';
@@ -120,7 +124,7 @@
     }
     if(/<\/head\s*>/i.test(out))out=out.replace(/<\/head\s*>/i,styles+'</head>');
     else out=out.replace(/<body\b/i,'<head>'+styles+'</head><body');
-    log("SRV3 TEST dual: zhSz="+zhSize+", enSz="+enSize+"; "+bilingual+" pairs centered individually; "+
+    log("SRV3 TEST split-anchor: zhBottom=88, enTop=90; zhSz="+zhSize+", enSz="+enSize+"; "+bilingual+" pairs centered individually; "+
       centered+" original cues positioned; "+shortened+" overlaps trimmed; "+
       inheritedRemoved+" inherited window/append attributes stripped; target visual English ratio=0.90, device calibration pending");
     return out;
@@ -370,7 +374,7 @@
     var responseHeaders=($response && $response.headers) || {};
     var contentType=String(responseHeaders["Content-Type"] || responseHeaders["content-type"] || "unknown").split(";")[0];
     var responseStatus=Number(($response && $response.statusCode) || 0);
-    log("v1.1.0-TestBlock.2 timedtext intercepted; layout=dual; origin status="+(responseStatus||"unknown")+
+    log("v1.1.0-TestBlock.3 timedtext intercepted; layout=split-anchor; origin status="+(responseStatus||"unknown")+
       "; content-type="+contentType+"; body length="+input.length);
     // An origin error or HTML response cannot be translated; preserve it without extra requests.
     if(responseStatus && (responseStatus<200 || responseStatus>=300)){
@@ -387,7 +391,7 @@
     var src=parser(input);
     if(!src||!src.rows.length){log("Unsupported or empty timedtext body; original preserved");return finish(input);}
     var key=pref("DEEPSEEK_KEY",""), hasKey=key.indexOf("sk-")===0 && key.length>8 && key.indexOf(" ")===-1;
-    log("v1.1.0-TestBlock.2 provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
+    log("v1.1.0-TestBlock.3 provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
     if(!hasKey){
       log("No DeepSeek API key in local QX prefs; original captions returned; no automatic YouTube translation");
       return finish(input);

@@ -1,10 +1,10 @@
-#!name=YouTube Bilingual Subtitles · 测试版 TestBlock.2
-#!desc=修正Test1中英连排：恢复中文上、英文下的独立窗口，统一放大英文；视觉90%仍待iPad校准。保留8秒预算、DeepSeek和测试缓存。测试时停用正式字幕重写。
+#!name=YouTube Bilingual Subtitles · 测试版 TestBlock.3
+#!desc=针对英文两行向上重叠：中文位置不变，英文改顶部锚定、向下展开；保留字号与缓存。原生避让和三行裁切待验证。正式版不受影响；字幕重写只启用一份。
 #!author=qutary
 #!homepage=https://github.com/qutary/youtube-bilingual-subtitles/tree/test-block-v1
 
-# 测试订阅地址保持不变；与正式版二选一启用。
+# 直接更新原测试订阅即可；正式订阅保持关闭并保留。
 hostname = www.youtube.com, m.youtube.com, music.youtube.com, video.google.com
 
-^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/test-block-v1/youtube-bilingual.js?v=TestBlock.2
-^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/test-block-v1/youtube-bilingual.js?v=TestBlock.2
+^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/test-block-v1/youtube-bilingual.js?v=TestBlock.3
+^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/test-block-v1/youtube-bilingual.js?v=TestBlock.3
