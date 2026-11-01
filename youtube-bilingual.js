@@ -1,4 +1,4 @@
-/* Independent YouTube bilingual captions for Quantumult X; v1.0.4-FullTrack; DeepSeek full-track controlled concurrency (experimental) */
+/* Independent YouTube bilingual captions for Quantumult X; v1.0.3-FullTrack; DeepSeek full-track controlled concurrency (experimental) */
 (function () {
   "use strict";
   var input = String(($response && $response.body) || "");
@@ -59,22 +59,9 @@
       while((found=pattern.exec(xml)))max=Math.max(max,Number(found[1]));
       return max+1;
     }
-    // Reserve extra vertical room whenever English may wrap. Bottom-centre
-    // anchors extend *upward*, so a second English line can collide with
-    // Chinese when both languages use one fixed vertical position.
-    // These are separate position styles, selected PER CUE rather than
-    // treating longer Chinese/English subtitles as fixed-height one-liners.
-    var zhAnchors=[88,80,70,60,50];
-    var zhWP=newId("wp"), enWP=zhWP+zhAnchors.length, ws=newId("ws"), pen=newId("pen");
-    function englishLineTier(text) {
-      var normalized=String(text||"").replace(/\s+/g," ").trim();
-      // Conservative estimate for native iPad YouTube fonts/line wrapping.
-      // It intentionally favours extra separation instead of collisions.
-      return Math.min(zhAnchors.length,Math.max(1,Math.ceil(normalized.length/44)));
-    }
-    var styles=zhAnchors.map(function(av,index){
-      return '<wp id="'+(zhWP+index)+'" ap="7" ah="50" av="'+av+'"/>';
-    }).join("")+
+    var zhWP=newId("wp"), enWP=zhWP+1, ws=newId("ws"), pen=newId("pen");
+    var styles =
+      '<wp id="'+zhWP+'" ap="7" ah="50" av="88"/>' +
       '<wp id="'+enWP+'" ap="7" ah="50" av="95"/>' +
       '<ws id="'+ws+'" ju="2" mh="0"/>' +
       '<pen id="'+pen+'" sz="110"/>' +
@@ -106,10 +93,8 @@
       var replacement;
       if(translations[i] && String(translations[i]).trim()!==rows[i].text) {
         var zh=String(translations[i]).trim(), english=rows[i].text;
-        // Place Chinese above the English window with space for wrapped lines.
-        // English stays bottom-centred; Chinese uses a height-aware position.
-        var zhTier=englishLineTier(english);
-        var zhOpen=op.replace(/>$/,' wp="'+(zhWP+zhTier-1)+'" ws="'+ws+'">');
+        // One fixed vertical anchor for EVERY Chinese cue, including long wrapping.
+        var zhOpen=op.replace(/>$/,' wp="'+zhWP+'" ws="'+ws+'">');
         replacement=
           zhOpen+'<s p="'+pen+'">'+encode(zh)+'</s>'+n.close+
           enOpen+'<s p="'+(pen+1)+'">'+encode(english)+'</s>'+n.close;
@@ -124,8 +109,6 @@
     }
     if(/<\/head\s*>/i.test(out))out=out.replace(/<\/head\s*>/i,styles+'</head>');
     else out=out.replace(/<body\b/i,'<head>'+styles+'</head><body');
-    log("SRV3 adaptive vertical spacing: zh anchors="+zhAnchors.join("/")+
-      ", English anchor=95, max 5 text-height tiers");
     log("SRV3 dual windows: "+bilingual+" pairs centered individually; "+
       centered+" original cues positioned; "+shortened+" overlaps trimmed; "+
       inheritedRemoved+" inherited window/append attributes stripped");
@@ -369,7 +352,7 @@
     var responseHeaders=($response && $response.headers) || {};
     var contentType=String(responseHeaders["Content-Type"] || responseHeaders["content-type"] || "unknown").split(";")[0];
     var responseStatus=Number(($response && $response.statusCode) || 0);
-    log("v1.0.4-FullTrack timedtext intercepted; origin status="+(responseStatus||"unknown")+
+    log("v1.0.3-FullTrack timedtext intercepted; origin status="+(responseStatus||"unknown")+
       "; content-type="+contentType+"; body length="+input.length);
     // An origin error or HTML response cannot be translated; preserve it without extra requests.
     if(responseStatus && (responseStatus<200 || responseStatus>=300)){
@@ -386,7 +369,7 @@
     var src=parser(input);
     if(!src||!src.rows.length){log("Unsupported or empty timedtext body; original preserved");return finish(input);}
     var key=pref("DEEPSEEK_KEY",""), hasKey=key.indexOf("sk-")===0 && key.length>8 && key.indexOf(" ")===-1;
-    log("v1.0.4-FullTrack provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
+    log("v1.0.3-FullTrack provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
     if(!hasKey){
       log("No DeepSeek API key in local QX prefs; original captions returned; no automatic YouTube translation");
       return finish(input);
