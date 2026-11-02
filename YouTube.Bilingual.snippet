@@ -1,10 +1,10 @@
-#!name=YouTube Bilingual Subtitles · 中文意群 Preview.4
-#!desc=短句窗采用正式版简单协议，长句保留意群词索引；异常JSON回收完整条目并续填缓存。保留8秒目标及原生逐行黑底，长视频首次仍不保证全译。仅原生App，与正式订阅二选一。
+#!name=YouTube Bilingual Subtitles · 长等待 Preview.1
+#!desc=独立长视频测试：DeepSeek整轨校验后交付，长轨15秒脚本目标、动态调用上限及原文短语对齐。未完成则保留英文，不能保证App自动重载。仅官方原生App，与其他字幕订阅二选一。
 #!author=qutary
-#!homepage=https://github.com/qutary/youtube-bilingual-subtitles/tree/preview-semantic-v1
+#!homepage=https://github.com/qutary/youtube-bilingual-subtitles/tree/preview-longwait-v1
 
-# 更新现有预览订阅；正式订阅保留但停用，勿同时启用。无需清理Key或译文缓存。
+# 独立测试分支；只启用一份YouTube字幕重写。无需清理Key或译文缓存。
 hostname = www.youtube.com, m.youtube.com, music.youtube.com, video.google.com
 
-^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-semantic-v1/youtube-bilingual.js?v=SemanticPreview.4
-^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-semantic-v1/youtube-bilingual.js?v=SemanticPreview.4
+^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-longwait-v1/youtube-bilingual.js?v=LongWaitPreview.1
+^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-longwait-v1/youtube-bilingual.js?v=LongWaitPreview.1
