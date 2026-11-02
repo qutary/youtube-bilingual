@@ -95,9 +95,6 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/youtub
 **为什么修改设置后没有马上变化？**  
 BoxJS 的修改会在 **下一次字幕网络请求**中生效；已经缓存到 YouTube App 播放器中的字幕可能需要关闭视频再重新进入。
 
-**升级后需要重新填写 Key 吗？**  
-如果此前使用的是带 BoxJS 配置的版本，原有 `QXYTB_BETA_` 本机配置键与译文缓存继续兼容，不要清除它们。从旧 `v1.3.0` 升级的用户则需在 BoxJS 里填写 Key：旧本地脚本保存的 `QXYTB_DEEPSEEK_KEY` **不会被自动读取或迁移**。这样可以避免未经确认地复用旧凭据。
-
 **其他 API 服务都能使用吗？**  
 需要模型与接口兼容本项目使用的 JSON 翻译协议；服务商的具体模型、计费政策和参数兼容性应以其官方文档为准。
 
@@ -108,6 +105,6 @@ BoxJS 的修改会在 **下一次字幕网络请求**中生效；已经缓存到
 - 本项目只对识别为 YouTube 原生 iOS App 的字幕请求尝试翻译，浏览器或未知客户端原则上直接放行。
 - 请遵守所用服务的使用条款；本项目不承诺所有视频、设备和网络环境都能稳定加载。
 
-欢迎通过 GitHub Issues 提交使用反馈和改进建议。报告问题时请去除 API Key、授权请求头、签名 URL 等敏感信息。
+BoxJS 接入参考：[官方安装说明](https://docs.boxjs.app/)、[官方订阅配置文档](https://docs.boxjs.app/dev/configure)、[DualSubs BoxJS 配置示例](https://github.com/DualSubs/BoxJs/blob/main/DualSubs.BoxJs.json)。
 
-BoxJS 接入参考：[官方安装说明](https://docs.boxjs.app/)、[官方订阅配置文档](https://docs.boxjs.app/dev/configure)、[DualSubs BoxJS 配置示例](https://github.com/DualSubs/BoxJs/blob/main/DualSubs.BoxJs.json)。本项目为非官方第三方工具，与 YouTube、Google、Quantumult X 及各 API 平台无隶属关系。
+本项目为非官方第三方工具，与 YouTube、Google、Quantumult X 及各 API 平台无隶属关系。
