@@ -1,10 +1,23 @@
-/* YouTube bilingual captions for Quantumult X; v1.2.0-SemanticPreview.1; DeepSeek full-track translation with styled text line breaks */
+/* YouTube bilingual captions for Quantumult X; v1.2.0-SemanticPreview.2; DeepSeek full-track translation with styled text line breaks */
 (function () {
   "use strict";
   var input = String(($response && $response.body) || "");
   var url = String(($request && $request.url) || "");
-  var finished = false;
-  function finish(body) { if (!finished) { finished = true; $done({body: body}); } }
+  var finished=false,workStarted=Date.now(),responseWatchdog=null,responseLimitMs=4500;
+  function finish(body){
+    if(!finished){
+      finished=true;if(responseWatchdog!==null)clearTimeout(responseWatchdog);
+      log("Response ready: rewriteMs="+(Date.now()-workStarted)+"; upstream YouTube fetch time excluded");
+      $done({body:body});
+    }
+  }
+  function startResponseWatchdog(){
+    var configured=Number(pref("PREVIEW_WAIT_MS","4500"));
+    responseLimitMs=isFinite(configured)&&configured>=1500&&configured<=8000?Math.round(configured):4500;
+    log("Response budget="+responseLimitMs+"ms; reserve=120ms; timing starts after origin response");
+    responseWatchdog=setTimeout(function(){log("Response watchdog: preserve original subtitles instead of waiting longer");finish(input);},Math.max(1,responseLimitMs-(Date.now()-workStarted)));
+  }
+  function remainingResponseWait(){return Math.max(1,responseLimitMs-(Date.now()-workStarted)-120);}
   function log(s) { console.log("[QXYTB-PREVIEW] " + s); }
   function pref(k, d) { try { return $prefs.valueForKey("QXYTB_" + k) || d; } catch (_) { return d; } }
   function plain(s) { return String(s || "").replace(/<br\s*\/?>/gi, " ").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim(); }
@@ -65,6 +78,15 @@
     if(header("sec-fetch-mode")||header("sec-fetch-dest")||/^https?:\/\/(?:www\.|m\.|music\.)?youtube\.com(?:\/|$)/i.test(header("origin")||header("referer")))return {kind:"browser",reason:"web-request-context"};
     return {kind:"unknown",reason:"native-client-not-proven"};
   }
+  function captionBackgroundStyles(ws,pen,zhSize,enSize){
+    // A window fill can cover both languages, unlike per-character backgrounds.
+    // Native iOS support and user caption overrides still require device testing.
+    var shared=pref("PREVIEW_BACKGROUND","window")==="window";
+    log("Caption background="+(shared?"window":"line")+"; native window-fill support unverified");
+    return '<ws id="'+ws+'" ju="2" mh="0"'+(shared?' wfc="#000000" wfo="254"':'')+'/>'+
+      '<pen id="'+pen+'" sz="'+zhSize+'"/>'+
+      '<pen id="'+(pen+1)+'" sz="'+enSize+'"/>';
+  }
   function renderStyledSrv3(xml, nodes, rows, translations) {
     // Keep the language separator INSIDE a styled text node: standalone XML
     // whitespace between spans can be ignored. The paragraph lays out both lines.
@@ -93,9 +115,7 @@
     }
     var styles =
       '<wp id="'+blockWP+'" ap="7" ah="50" av="95"/>' +
-      '<ws id="'+ws+'" ju="2" mh="0"/>' +
-      '<pen id="'+pen+'" sz="'+zhSize+'"/>' +
-      '<pen id="'+(pen+1)+'" sz="'+enSize+'"/>';
+      captionBackgroundStyles(ws,pen,zhSize,enSize);
     // Prevent accumulated roll-up captions; no changes to cue start times.
     var times=nodes.map(function(node) {
       var a=node.open.match(/\bt\s*=\s*["'](\d+)["']/i);
@@ -217,11 +237,11 @@
   function deepSeekProgressive(rows,key,sourceHash) {
     // FullTrack safe-first: translate the whole transcript opportunistically before
     // returning ONE subtitle response. Not a background task or a live overlay.
-    // Eight-second best-effort window; return original/cached captions if DeepSeek is slow.
+    // Best-effort response window; return original/cached captions if DeepSeek is slow.
     // The queue spans the whole track, but only completed translations are returned on time.
     // Short tracks can launch every batch immediately; bigger tracks keep a safe cap.
-    // Strict eight-second response deadline limits playback timeout risk.
-    var MAX_INFLIGHT=6, BATCH=24, FIRST_BATCH=12, RETRY_CHUNK=8, MAX_CALLS=36, DEADLINE=8000;
+    // The remaining end-to-end response budget limits playback timeout risk.
+    var MAX_INFLIGHT=6, BATCH=24, FIRST_BATCH=12, RETRY_CHUNK=8, MAX_CALLS=36, DEADLINE=remainingResponseWait();
     var cacheSuffix=sourceHash.replace(/[^A-Za-z0-9]/g,"_");
     var cacheKey="QXYTB_FT_V2_"+cacheSuffix;
     var catalogKey="QXYTB_FT_LIST_V2",lines=new Array(rows.length).fill(""),cacheImported=false;
@@ -316,7 +336,7 @@
       });
       return {accepted:accepted,missing:missing};
     }
-    function request(job){
+    function request(job,isActive){
       var ids=job.ids,textLength=ids.reduce(function(t,id){return t+rows[id].text.length;},0);
       var body={
         model:"deepseek-flash",thinking:{type:"disabled"},temperature:0.2,stream:false,
@@ -342,11 +362,12 @@
       };
       return $task.fetch({url:"https://api.deepseek.com/chat/completions",method:"POST",
         headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
-        body:JSON.stringify(body)}).then(function(resp){return decodeAnswer(resp,ids);});
+        body:JSON.stringify(body)}).then(function(resp){if(isActive&&!isActive())return {accepted:0,missing:[]};return decodeAnswer(resp,ids);});
     }
     return new Promise(function(resolve){
       var active=0,calls=0,complete=false,rateLimited=false,errors=0;
-      var timer=setTimeout(function(){end("deadline");},DEADLINE);
+      var stopAt=workStarted+responseLimitMs-120;
+      var timer=setTimeout(function(){end("deadline");},Math.min(DEADLINE,remainingResponseWait()));
       function end(why){
         if(complete)return;
         complete=true;clearTimeout(timer);save();
@@ -361,10 +382,12 @@
       }
       function launch(){
         if(complete)return;
-        while(!rateLimited&&active<MAX_INFLIGHT&&jobs.length>0&&calls<MAX_CALLS){
+        if(finished){end("response already returned");return;}
+        if(active===0&&jobs.length&&stopAt-Date.now()<900){end("response budget reserved");return;}
+        while(!rateLimited&&active<MAX_INFLIGHT&&jobs.length>0&&calls<MAX_CALLS&&stopAt-Date.now()>=900){
           (function(job){
             active++;calls++;
-            request(job).then(function(result){
+            request(job,function(){return !complete&&!finished;}).then(function(result){
               if(complete)return;
               if(result.accepted)save();
               if(result.missing.length)splitRetry(result.missing,job.tries);
@@ -553,7 +576,7 @@
       var open='<p t="'+start+'" d="'+(end-start)+'" wp="'+wp+'" ws="'+ws+'" p="'+(p.zh?pen:pen+1)+'">';
       return open+(p.zh?'<s p="'+pen+'">'+encode(p.zh)+'&#10;</s>&#8203;':"")+'<s p="'+(pen+1)+'">'+encode(p.en)+'</s></p>';
     }).join("");
-    var styles='<wp id="'+wp+'" ap="7" ah="50" av="95"/><ws id="'+ws+'" ju="2" mh="0"/><pen id="'+pen+'" sz="110"/><pen id="'+(pen+1)+'" sz="140"/>';
+    var styles='<wp id="'+wp+'" ap="7" ah="50" av="95"/>'+captionBackgroundStyles(ws,pen,110,140);
     var out=xml.replace(/(<body\b[^>]*>)[\s\S]*?<\/body>/i,function(_,open){return open+body+'</body>';});
     if(/<\/head\s*>/i.test(out))out=out.replace(/<\/head\s*>/i,styles+'</head>');else out=out.replace(/<body\b/i,'<head>'+styles+'</head><body');
     log("Semantic render: sourceUnits="+rows.length+", displayGroups="+chunks.length+", translatedUnits="+values.filter(Boolean).length);
@@ -563,11 +586,11 @@
   function deepSeekSemantic(rows,key,sourceHash) {
     // Semantic safe-first: translate the whole transcript opportunistically before
     // returning ONE subtitle response. Not a background task or a live overlay.
-    // Eight-second best-effort window; return original/cached captions if DeepSeek is slow.
+    // Best-effort response window; return original/cached captions if DeepSeek is slow.
     // The queue spans the whole track, but only completed translations are returned on time.
     // Short tracks can launch every batch immediately; bigger tracks keep a safe cap.
-    // Strict eight-second response deadline limits playback timeout risk.
-    var MAX_INFLIGHT=6, BATCH=8, FIRST_BATCH=6, RETRY_CHUNK=4, MAX_CALLS=36, DEADLINE=8000;
+    // The remaining end-to-end response budget limits playback timeout risk.
+    var MAX_INFLIGHT=6, BATCH=8, FIRST_BATCH=1, RETRY_CHUNK=4, MAX_CALLS=36, DEADLINE=remainingResponseWait();
     var cacheKey="QXYTB_SEM_V1_"+sourceHash.replace(/[^A-Za-z0-9]/g,"_");
     var catalogKey="QXYTB_SEM_LIST_V1",lines=new Array(rows.length).fill("");
     try{
@@ -592,21 +615,20 @@
         $prefs.setValueForKey(JSON.stringify(list.slice(0,3)),catalogKey);
       }catch(e){log("Semantic cache save unavailable");}
     }
-    var jobs=[],buffer=[],already=lines.filter(Boolean).length;
+    var jobs=[],buffer=[],bufferWords=0,wordBudget=160,already=lines.filter(Boolean).length;
     for(var i=0;i<rows.length;i++){
       if(lines[i]||isSoundOnly(rows[i].text))continue;
-      buffer.push(i);
+      var words=rows[i].words.length;
+      if(buffer.length&&jobs.length>0&&bufferWords+words>wordBudget){jobs.push({ids:buffer,tries:0});buffer=[];bufferWords=0;}
+      buffer.push(i);bufferWords+=words;
       if(jobs.length===0 && buffer.length===FIRST_BATCH){
-        jobs.push({ids:buffer,tries:0});buffer=[];
+        jobs.push({ids:buffer,tries:0});buffer=[];bufferWords=0;
       }else if(buffer.length===BATCH){
-        jobs.push({ids:buffer,tries:0});buffer=[];
+        jobs.push({ids:buffer,tries:0});buffer=[];bufferWords=0;
       }
     }
     if(buffer.length)jobs.push({ids:buffer,tries:0});
-    // Prior logs show 188 cues -> 9 groups, while the old fixed six-way
-    // limit left three queued until their predecessors finished.
-    // For small outstanding jobs we can start all requests in the same response.
-    // Cap long new transcripts conservatively to reduce API-rate-limit spikes.
+    // Prioritize the opening window and keep heavier queued batches word-bounded.
     MAX_INFLIGHT=Math.min(jobs.length, jobs.length<=9 ? 9 : rows.length<=360 ? 8 : 6);
     if(!jobs.length){
       log("Semantic cache complete or sound-only: "+already+"/"+rows.length);
@@ -649,7 +671,7 @@
       });
       return {accepted:accepted,missing:missing};
     }
-    function request(job){
+    function request(job,isActive){
       var ids=job.ids,textLength=ids.reduce(function(t,id){return t+rows[id].text.length;},0);
       var body={model:"deepseek-flash",thinking:{type:"disabled"},temperature:0.2,stream:false,
         max_tokens:Math.max(1800,Math.min(6000,Math.ceil(textLength*2)+1400)),response_format:{type:"json_object"},
@@ -670,11 +692,12 @@
           })}
         ]};
       return $task.fetch({url:"https://api.deepseek.com/chat/completions",method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},body:JSON.stringify(body)})
-        .then(function(resp){return decodeAnswer(resp,ids);});
+        .then(function(resp){if(isActive&&!isActive())return {accepted:0,missing:[]};return decodeAnswer(resp,ids);});
     }
     return new Promise(function(resolve){
       var active=0,calls=0,complete=false,rateLimited=false,errors=0;
-      var timer=setTimeout(function(){end("deadline");},DEADLINE);
+      var stopAt=workStarted+responseLimitMs-120;
+      var timer=setTimeout(function(){end("deadline");},Math.min(DEADLINE,remainingResponseWait()));
       function end(why){
         if(complete)return;
         complete=true;clearTimeout(timer);save();
@@ -689,10 +712,12 @@
       }
       function launch(){
         if(complete)return;
-        while(!rateLimited&&active<MAX_INFLIGHT&&jobs.length>0&&calls<MAX_CALLS){
+        if(finished){end("response already returned");return;}
+        if(active===0&&jobs.length&&stopAt-Date.now()<900){end("response budget reserved");return;}
+        while(!rateLimited&&active<MAX_INFLIGHT&&jobs.length>0&&calls<MAX_CALLS&&stopAt-Date.now()>=900){
           (function(job){
             active++;calls++;
-            request(job).then(function(result){
+            request(job,function(){return !complete&&!finished;}).then(function(result){
               if(complete)return;
               if(result.accepted)save();
               if(result.missing.length)splitRetry(result.missing,job.tries);
@@ -728,7 +753,7 @@
   try {
     if(!input||!/(?:\/api\/timedtext|\/timedtext)(?:\?|$)/.test(url))return finish(input);
     var client=requestClient(url,($request&&$request.headers)||{});
-    log("v1.2.0-SemanticPreview.1 scope=ios-app; client="+client.kind+"; reason="+client.reason);
+    log("v1.2.0-SemanticPreview.2 scope=ios-app; client="+client.kind+"; reason="+client.reason);
     if(client.kind!=="ios-app"){
       log("Browser or unrecognized client bypassed; original response preserved; DeepSeek/cache not used");
       return finish(input);
@@ -736,7 +761,7 @@
     var responseHeaders=($response && $response.headers) || {};
     var contentType=String(responseHeaders["Content-Type"] || responseHeaders["content-type"] || "unknown").split(";")[0];
     var responseStatus=Number(($response && $response.statusCode) || 0);
-    log("v1.2.0-SemanticPreview.1 timedtext intercepted; layout=text-break; origin status="+(responseStatus||"unknown")+
+    log("v1.2.0-SemanticPreview.2 timedtext intercepted; layout=text-break; origin status="+(responseStatus||"unknown")+
       "; content-type="+contentType+"; body length="+input.length);
     // An origin error or HTML response cannot be translated; preserve it without extra requests.
     if(responseStatus && (responseStatus<200 || responseStatus>=300)){
@@ -750,16 +775,19 @@
       return finish(input);
     }
     if(/[?&]tlang=/i.test(url)||/[?&]lang=zh(?:-|&|$)/i.test(url))return finish(input);
+    startResponseWatchdog();
     var src=parser(input);
     if(!src||!src.rows.length){log("Unsupported or empty timedtext body; original preserved");return finish(input);}
     var key=pref("DEEPSEEK_KEY",""), hasKey=key.indexOf("sk-")===0 && key.length>8 && key.indexOf(" ")===-1;
-    log("v1.2.0-SemanticPreview.1 provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
+    log("v1.2.0-SemanticPreview.2 provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
     if(!hasKey){
       log("No DeepSeek API key in local QX prefs; original captions returned; no automatic YouTube translation");
       return finish(input);
     }
     // Reuse the same transcript-body hash even when the video URL's signed tokens change.
+    var planStarted=Date.now();
     var semantic=semanticPlanSrv3(input);
+    log("Semantic planningMs="+(Date.now()-planStarted));
     var workingRows=semantic.ok?semantic.rows:src.rows;
     if(semantic.ok)log("Semantic plan: original="+semantic.original+", windows="+workingRows.length+", words="+semantic.wordCount+", wordStartMarkers="+semantic.exactStarts+", estimatedWordTimes="+semantic.estimated);
     else log("Semantic plan unavailable: "+semantic.reason+"; original cue boundaries retained");
@@ -772,7 +800,10 @@
       }
       log("deepseek: bilingual "+lines.filter(Boolean).length+"/"+workingRows.length+
         " translation units (unfinished units retain English)");
-      finish(speechOnlyXml(semantic.ok?renderSemanticSrv3(input,workingRows,lines):src.render(lines)));
+      var renderStarted=Date.now();
+      var output=speechOnlyXml(semantic.ok?renderSemanticSrv3(input,workingRows,lines):src.render(lines));
+      log("Subtitle renderMs="+(Date.now()-renderStarted));
+      finish(output);
     }).catch(function(e){log("Translation failed; original preserved: "+(e&&e.message||e));finish(input);});
   } catch(e){log("Error: "+(e&&e.message||e));finish(input);}
 })();
