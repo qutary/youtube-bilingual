@@ -8,8 +8,16 @@ YouTube Bilingual Subtitles 是一款面向 **Quantumult X** 的轻量级字幕�
 
 > **适用平台：** iPad · YouTube 原生 App · Quantumult X  
 > **翻译引擎：** DeepSeek API（自备 Key）  
-> **当前版本：** `v1.1.0-FullTrack`（段内双语排版 / 自适应并发 / 8 秒翻译预算）  
+> **当前版本：** `v1.1.1-FullTrack`（段内双语排版 / 自适应并发 / 8 秒翻译预算）  
 > **说明：** 这是非官方第三方项目，与 YouTube、Google、DeepSeek、Quantumult X 官方无隶属关系。
+
+## v1.1.1 浏览器隔离
+
+默认只处理能够识别为原生 iOS YouTube App 的字幕请求。Safari、Chrome及带网页请求特征的字幕响应原样返回，不读取译文缓存、不调用DeepSeek，避免与浏览器字幕翻译扩展重复处理。无法确认来源的请求也保留原字幕。
+
+若App只显示英文，可查看日志中的 `scope=ios-app; client=...`。`ios-app`代表已识别原生请求；`browser`或`unknown`代表已旁路。客户端识别依据User-Agent及YouTube客户端标记，不是操作系统提供的应用进程隔离。
+
+此版本只修正生效范围，现有字幕显示、原条目时间与翻译方式不变。跨条目的中文语义重组仍在独立验证，不宣称已在本版解决。
 
 ## ✨ 主要功能
 
@@ -112,7 +120,7 @@ DeepSeek 分批并发翻译
 先临时关闭重写，确认原生英文字幕是否正常。若日志显示 `origin status=429`，意味着上游 YouTube 字幕接口返回了限制响应，而不是 DeepSeek 已翻译失败。若字幕源返回 HTTP 200，再检查冲突规则、脚本版本及截止日志。
 
 **怎样确认它已经运行？**  
-打开 Quantumult X「日志」，搜索 `[QXYTB]`、`v1.1.0-FullTrack` 以及 `SRV3 bilingual block: ...`。发生新翻译时还会显示 `FullTrack finished: translated=.../...`；全量缓存命中时显示 `FullTrack cache complete or sound-only: ...`。
+打开 Quantumult X「日志」，搜索 `[QXYTB]`、`v1.1.1-FullTrack` 以及 `SRV3 bilingual block: ...`。发生新翻译时还会显示 `FullTrack finished: translated=.../...`；全量缓存命中时显示 `FullTrack cache complete or sound-only: ...`。
 
 **使用需要付费吗？**  
 需要自行承担 DeepSeek API 的 token 费用。字幕越长、重试越多，请求与费用通常越高；以 DeepSeek 官方定价与账户余额为准。

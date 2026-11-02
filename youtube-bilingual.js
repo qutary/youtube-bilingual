@@ -1,4 +1,4 @@
-/* YouTube bilingual captions for Quantumult X; v1.1.0-FullTrack; DeepSeek full-track translation with styled text line breaks */
+/* YouTube bilingual captions for Quantumult X; v1.1.1-FullTrack; DeepSeek full-track translation with styled text line breaks */
 (function () {
   "use strict";
   var input = String(($response && $response.body) || "");
@@ -43,6 +43,27 @@
     });
     if(removed||trimmed)log("Dialogue filter: "+removed+" sound-only cues omitted; "+trimmed+" mixed cues cleaned");
     return out;
+  }
+
+  function requestClient(requestUrl,headers){
+    headers=headers||{};
+    function header(name){
+      var names=Object.keys(headers),target=name.toLowerCase();
+      for(var i=0;i<names.length;i++)if(names[i].toLowerCase()===target)return String(headers[names[i]]||"").trim();
+      return "";
+    }
+    function query(name){
+      var m=String(requestUrl).match(new RegExp("[?&]"+name+"=([^&#]*)","i"));
+      try{return m?decodeURIComponent(m[1].replace(/\+/g," ")):"";}catch(_){return "";}
+    }
+    var ua=header("user-agent"),client=query("c").toUpperCase(),clientName=header("x-youtube-client-name");
+    // Browser evidence takes precedence, including web requests using an IOS API client.
+    if(/Mozilla\/|(?:Safari|CriOS|FxiOS|Chrome|Edg|OPR)\//i.test(ua))return {kind:"browser",reason:"browser-user-agent"};
+    if(/com\.google\.ios\.youtube\//i.test(ua)||/^YouTube(?:iOS)?\//i.test(ua))return {kind:"ios-app",reason:"native-user-agent"};
+    if(/^(?:WEB|MWEB)(?:_|$)/.test(client)||clientName==="1"||clientName==="2")return {kind:"browser",reason:"web-client"};
+    if(/^IOS(?:_|$)/.test(client)||clientName==="5")return {kind:"ios-app",reason:"ios-client"};
+    if(header("sec-fetch-mode")||header("sec-fetch-dest")||/^https?:\/\/(?:www\.|m\.|music\.)?youtube\.com(?:\/|$)/i.test(header("origin")||header("referer")))return {kind:"browser",reason:"web-request-context"};
+    return {kind:"unknown",reason:"native-client-not-proven"};
   }
   function renderStyledSrv3(xml, nodes, rows, translations) {
     // Keep the language separator INSIDE a styled text node: standalone XML
@@ -378,10 +399,16 @@
   function hash(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(16)+":"+s.length;}
   try {
     if(!input||!/(?:\/api\/timedtext|\/timedtext)(?:\?|$)/.test(url))return finish(input);
+    var client=requestClient(url,($request&&$request.headers)||{});
+    log("v1.1.1-FullTrack scope=ios-app; client="+client.kind+"; reason="+client.reason);
+    if(client.kind!=="ios-app"){
+      log("Browser or unrecognized client bypassed; original response preserved; DeepSeek/cache not used");
+      return finish(input);
+    }
     var responseHeaders=($response && $response.headers) || {};
     var contentType=String(responseHeaders["Content-Type"] || responseHeaders["content-type"] || "unknown").split(";")[0];
     var responseStatus=Number(($response && $response.statusCode) || 0);
-    log("v1.1.0-FullTrack timedtext intercepted; layout=text-break; origin status="+(responseStatus||"unknown")+
+    log("v1.1.1-FullTrack timedtext intercepted; layout=text-break; origin status="+(responseStatus||"unknown")+
       "; content-type="+contentType+"; body length="+input.length);
     // An origin error or HTML response cannot be translated; preserve it without extra requests.
     if(responseStatus && (responseStatus<200 || responseStatus>=300)){
@@ -398,7 +425,7 @@
     var src=parser(input);
     if(!src||!src.rows.length){log("Unsupported or empty timedtext body; original preserved");return finish(input);}
     var key=pref("DEEPSEEK_KEY",""), hasKey=key.indexOf("sk-")===0 && key.length>8 && key.indexOf(" ")===-1;
-    log("v1.1.0-FullTrack provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
+    log("v1.1.1-FullTrack provider=deepseek, DeepSeek key present="+(hasKey?"YES":"NO"));
     if(!hasKey){
       log("No DeepSeek API key in local QX prefs; original captions returned; no automatic YouTube translation");
       return finish(input);
