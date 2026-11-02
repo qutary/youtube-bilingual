@@ -1,0 +1,234 @@
+{
+  "id": "qutary.youtube-bilingual.boxjs-preview-v1.sub",
+  "name": "YouTube Bilingual Subtitles · BoxJS",
+  "author": "@qutary",
+  "description": "在 YouTube 原生 iOS App 中配置字幕翻译、显示方式、API 平台和缓存。",
+  "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+  "apps": [
+    {
+      "id": "qutary.youtube-bilingual.boxjs-preview-v1",
+      "name": "YouTube Bilingual Subtitles",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "descs_html": [
+        "在 Quantumult X 启用 YouTube Bilingual Subtitles 重写，然后在此配置翻译服务及字幕显示方式。",
+        "支持中英双语（中文在上、英文在下）与仅中文字幕。无可用译文时保留原字幕，不会将整轨字幕清空。",
+        "DeepSeek、火山方舟、OpenRouter 和自定义接口各自保存 API Key、模型和端点；切换平台不会删除此前设置。",
+        "最近使用的字幕缓存最多保留 20 条（另受总容量限制）；长视频自动分块保存已完成译文，重复打开可复用。",
+        "<a href=\"https://github.com/qutary/youtube-bilingual-subtitles#安装与配置\">安装教程与使用说明</a>"
+      ],
+      "keys": [
+        "QXYTB_BETA_ENABLED",
+        "QXYTB_BETA_DISPLAY",
+        "QXYTB_BETA_PROVIDER",
+        "QXYTB_BETA_DEEPSEEK_KEY",
+        "QXYTB_BETA_DEEPSEEK_MODEL",
+        "QXYTB_BETA_DEEPSEEK_ENDPOINT",
+        "QXYTB_BETA_VOLCENGINE_KEY",
+        "QXYTB_BETA_VOLCENGINE_MODEL",
+        "QXYTB_BETA_VOLCENGINE_ENDPOINT",
+        "QXYTB_BETA_OPENROUTER_KEY",
+        "QXYTB_BETA_OPENROUTER_MODEL",
+        "QXYTB_BETA_OPENROUTER_ENDPOINT",
+        "QXYTB_BETA_CUSTOM_KEY",
+        "QXYTB_BETA_CUSTOM_MODEL",
+        "QXYTB_BETA_CUSTOM_ENDPOINT",
+        "QXYTB_BETA_JSON_MODE",
+        "QXYTB_BETA_BYPASS_CACHE",
+        "QXYTB_BETA_CACHE_EPOCH",
+        "QXYTB_BETA_RESPONSE_BUDGET"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_ENABLED",
+          "name": "开启翻译",
+          "type": "boolean",
+          "val": true,
+          "desc": "关闭时原样返回源字幕，不读译文缓存、不调用翻译 API。"
+        },
+        {
+          "id": "QXYTB_BETA_DISPLAY",
+          "name": "字幕显示方式",
+          "type": "selects",
+          "val": "bilingual",
+          "items": [
+            {
+              "key": "bilingual",
+              "label": "双语：中文在上、英文在下"
+            },
+            {
+              "key": "translation",
+              "label": "仅译文：只显示中文"
+            }
+          ],
+          "desc": "仅保留这两种显示方式；缺失或失败的翻译仍保留源字幕，避免字幕空白。"
+        },
+        {
+          "id": "QXYTB_BETA_PROVIDER",
+          "name": "翻译 API 平台",
+          "type": "selects",
+          "val": "deepseek",
+          "items": [
+            {
+              "key": "deepseek",
+              "label": "DeepSeek"
+            },
+            {
+              "key": "volcengine",
+              "label": "火山方舟"
+            },
+            {
+              "key": "openrouter",
+              "label": "OpenRouter"
+            },
+            {
+              "key": "custom",
+              "label": "自定义 OpenAI 兼容接口 / 中转站"
+            }
+          ],
+          "desc": "只使用所选平台的 Key、模型和端点；切换平台不会覆盖其他平台已填的配置。"
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_KEY",
+          "name": "[DeepSeek] API Key",
+          "type": "text",
+          "val": "",
+          "desc": "在本机填写 DeepSeek API Key；不会自动读取 v1.3.0 使用的旧式本地 Key。"
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_MODEL",
+          "name": "[DeepSeek] 模型 ID",
+          "type": "text",
+          "val": "deepseek-flash",
+          "desc": "填写当前端点支持的模型 ID。"
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_ENDPOINT",
+          "name": "[DeepSeek] 完整 API 端点",
+          "type": "text",
+          "val": "https://api.deepseek.com/chat/completions",
+          "desc": "填写完整 HTTPS Chat Completions URL；不能含账号、密码、查询参数或 # 片段。留空使用预设端点。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_KEY",
+          "name": "[火山方舟] API Key",
+          "type": "text",
+          "val": "",
+          "desc": "仅在本设备填写火山方舟 API Key。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_MODEL",
+          "name": "[火山方舟] 模型 / 接入点 ID",
+          "type": "text",
+          "val": "",
+          "desc": "必填：按火山方舟控制台填写当前端点支持的模型 ID 或推理接入点 ID。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_ENDPOINT",
+          "name": "[火山方舟] 完整 API 端点",
+          "type": "text",
+          "val": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+          "desc": "完整 HTTPS Chat Completions URL；不能含账号、密码、查询参数或 # 片段。留空使用预设端点。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_KEY",
+          "name": "[OpenRouter] API Key",
+          "type": "text",
+          "val": "",
+          "desc": "仅在本设备填写 OpenRouter API Key。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_MODEL",
+          "name": "[OpenRouter] 模型 ID",
+          "type": "text",
+          "val": "",
+          "desc": "必填：填写 OpenRouter 列出的完整模型 ID（包括提供商前缀）。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_ENDPOINT",
+          "name": "[OpenRouter] 完整 API 端点",
+          "type": "text",
+          "val": "https://openrouter.ai/api/v1/chat/completions",
+          "desc": "完整 HTTPS Chat Completions URL；不能含账号、密码、查询参数或 # 片段。留空使用预设端点。"
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_KEY",
+          "name": "[自定义] API Key",
+          "type": "text",
+          "val": "",
+          "desc": "仅在本设备填写该接口的 Key；所选端点会收到 Key、字幕及必要上下文。"
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_MODEL",
+          "name": "[自定义] 模型 ID",
+          "type": "text",
+          "val": "",
+          "desc": "必填：填写该接口实际提供的模型 ID。"
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_ENDPOINT",
+          "name": "[自定义] 完整 API 端点",
+          "type": "text",
+          "val": "",
+          "desc": "必填：完整 HTTPS Chat Completions URL，不能含账号、密码、查询参数或 # 片段；接口须支持 Bearer Key、messages 及 choices[0].message.content。"
+        },
+        {
+          "id": "QXYTB_BETA_JSON_MODE",
+          "name": "[高级] JSON 输出模式",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "自动：按平台预设"
+            },
+            {
+              "key": "on",
+              "label": "开启：发送 response_format=json_object"
+            },
+            {
+              "key": "off",
+              "label": "关闭：省略 response_format"
+            }
+          ],
+          "desc": "自动仅在 DeepSeek 发送该参数。所有模式仍要求模型按提示词返回合规 JSON；若接口拒绝 response_format，请选关闭。"
+        },
+        {
+          "id": "QXYTB_BETA_RESPONSE_BUDGET",
+          "name": "[高级] 字幕响应等待预算",
+          "type": "selects",
+          "val": "balanced",
+          "items": [
+            {
+              "key": "safe",
+              "label": "安全优先（3.2秒）"
+            },
+            {
+              "key": "balanced",
+              "label": "均衡（6.3秒，默认）"
+            },
+            {
+              "key": "extended",
+              "label": "延长等待（9.5秒，接近超时边界）"
+            }
+          ],
+          "desc": "字幕响应处理的等待上限：安全 3.2 秒、均衡 6.3 秒、延长 9.5 秒。延长等待可提高长视频首次覆盖率，但网络不稳定时也可能出现加载失败；这些不是 YouTube 官方规定的固定超时值。"
+        },
+        {
+          "id": "QXYTB_BETA_BYPASS_CACHE",
+          "name": "[高级] 临时绕过译文缓存",
+          "type": "boolean",
+          "val": false,
+          "desc": "启用后每次字幕请求都跳过缓存，可能产生重复 API 费用。仅建议验证新 Key 或切换接口时短暂启用，完成后关闭。"
+        },
+        {
+          "id": "QXYTB_BETA_CACHE_EPOCH",
+          "name": "[高级] 译文缓存版本",
+          "type": "text",
+          "val": "1",
+          "desc": "更改版本会启用不同的缓存命名空间，使已有译文不能复用，可能产生额外 API 费用。通常保持默认 1。缓存保留最近最多 20 条字幕（受容量上限限制），超长字幕自动分块保存。"
+        }
+      ]
+    }
+  ]
+}
