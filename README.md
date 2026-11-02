@@ -106,12 +106,6 @@ BoxJS 的修改会在 **下一次字幕网络请求**中生效；已经缓存到
 - 本项目只对识别为 YouTube 原生 iOS App 的字幕请求尝试翻译，浏览器或未知客户端原则上直接放行。
 - 请遵守所用服务的使用条款；本项目不承诺所有视频、设备和网络环境都能稳定加载。
 
-## 项目文件与历史版本
-
-- [`YouTube.Bilingual.snippet`](./YouTube.Bilingual.snippet)：Quantumult X 正式订阅入口
-- [`youtube-bilingual.js`](./youtube-bilingual.js)：字幕处理与翻译脚本
-- [`youtube-bilingual.boxjs.json`](./youtube-bilingual.boxjs.json)：BoxJS 配置
-- [`archive/v1.3.0/`](./archive/v1.3.0/)：前一正式版本的完整文件快照
-- [`v1.3.0 历史归档分支`](https://github.com/qutary/youtube-bilingual-subtitles/tree/archive/v1.3.0-main-2026-11-03)：发布前 `main` 的完整 Git 历史
-
 欢迎通过 GitHub Issues 提交使用反馈和改进建议。报告问题时请去除 API Key、授权请求头、签名 URL 等敏感信息。
+
+BoxJS 接入参考：[官方安装说明](https://docs.boxjs.app/)、[官方订阅配置文档](https://docs.boxjs.app/dev/configure)、[DualSubs BoxJS 配置示例](https://github.com/DualSubs/BoxJs/blob/main/DualSubs.BoxJs.json)。本项目为非官方第三方工具，与 YouTube、Google、Quantumult X 及各 API 平台无隶属关系。
