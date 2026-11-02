@@ -1,10 +1,10 @@
-#!name=YouTube Bilingual Subtitles · 中文意群 Preview.2
-#!desc=首句优先、约4.5秒重写预算，超时返回已完成译文或英文；试验共用黑底并保留原黑底兜底。仅原生App，与正式订阅二选一。底板和首次加载表现待实机验证，快速模式首次覆盖率可能降低。
+#!name=YouTube Bilingual Subtitles · 中文意群 Preview.3
+#!desc=撤销4.5秒快速默认，恢复8秒覆盖优先；紧凑分屏协议、缓存续填，保留原生逐行黑底。长视频首次仍不保证全译，缺失部分保留英文。仅原生App，与正式订阅二选一。
 #!author=qutary
 #!homepage=https://github.com/qutary/youtube-bilingual-subtitles/tree/preview-semantic-v1
 
-# 预览版会重新翻译语义单元；正式版保留但暂时停用，勿同时启用。
+# 更新现有预览订阅；正式订阅保留但停用，勿同时启用。
 hostname = www.youtube.com, m.youtube.com, music.youtube.com, video.google.com
 
-^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-semantic-v1/youtube-bilingual.js?v=SemanticPreview.2
-^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-semantic-v1/youtube-bilingual.js?v=SemanticPreview.2
+^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-semantic-v1/youtube-bilingual.js?v=SemanticPreview.3
+^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-semantic-v1/youtube-bilingual.js?v=SemanticPreview.3
