@@ -1,10 +1,10 @@
-#!name=YouTube Bilingual Subtitles · 长等待 Preview.1
-#!desc=独立长视频测试：DeepSeek整轨校验后交付，长轨15秒脚本目标、动态调用上限及原文短语对齐。未完成则保留英文，不能保证App自动重载。仅官方原生App，与其他字幕订阅二选一。
+#!name=YouTube Bilingual Subtitles · 长等待 Preview.2
+#!desc=修复旧8秒回调提前结束和整轨门槛隐藏中文：已完成中文保留，缺失部分留英文；改进短语失败重试。DeepSeek专用、8/15秒脚本目标，原生等待仍待验证。与其他字幕订阅二选一。
 #!author=qutary
 #!homepage=https://github.com/qutary/youtube-bilingual-subtitles/tree/preview-longwait-v1
 
-# 独立测试分支；只启用一份YouTube字幕重写。无需清理Key或译文缓存。
+# 更新同一长等待测试订阅及脚本；只启用一份字幕重写。无需清理Key或缓存。
 hostname = www.youtube.com, m.youtube.com, music.youtube.com, video.google.com
 
-^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-longwait-v1/youtube-bilingual.js?v=LongWaitPreview.1
-^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-longwait-v1/youtube-bilingual.js?v=LongWaitPreview.1
+^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-longwait-v1/youtube-bilingual.js?v=LongWaitPreview.2
+^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/preview-longwait-v1/youtube-bilingual.js?v=LongWaitPreview.2
