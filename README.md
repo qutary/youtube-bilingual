@@ -80,3 +80,5 @@ API Key 仅应填写在自己的 BoxJS / QX 配置中，**不要上传至 GitHub
 
 - **v1.5.0**：正式整合 Preview.18；三家平台手动并发、手动响应时间、超长字幕自适应批次、长句可靠分段与 OpenRouter 低延迟配置。
 - 测试分支：[`preview-boxjs-v1`](https://github.com/qutary/youtube-bilingual-subtitles/tree/preview-boxjs-v1)，用于后续实验，正常使用建议订阅 `main`。
+
+开发者可查看独立的[完整开发日志与技术演进记录](./DEVELOPMENT_LOG.md)，其中整理了版本迭代、HAR/QX 诊断、模型返回校验、缓存和多平台性能测试。
