@@ -2,6 +2,16 @@
 
 这是 YouTube Bilingual Subtitles 的 Shadowrocket 初始移植版。翻译、字幕解析、语义分段、双语渲染、长视频批次调度与缓存逻辑沿用 QX v1.5.0；运行时改用 Shadowrocket 的 `$httpClient`、`$persistentStore`、`$argument` 和 `$done` 接口。
 
+## Preview module for testing this branch
+
+Before this pull request is merged, import the branch-pinned preview module:
+
+```text
+https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/feature/shadowrocket-support/shadowrocket/YouTube.Bilingual.shadowrocket.preview.module
+```
+
+The regular module URL above points to `main` and is intended for use after the pull request is merged. The preview module explicitly loads its script from this feature branch, so it can be tested before merge.
+
 ## 安装
 
 模块订阅地址：
