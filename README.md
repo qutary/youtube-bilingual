@@ -60,7 +60,7 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/shadow
 **① 添加 QX 字幕重写订阅**
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/YouTube.Bilingual.snippet
+https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/YouTube.Bilingual.snippet
 ```
 
 在 Quantumult X **重写 → 引用** 中添加并启用，同时配置字幕域名 MitM，安装并信任 HTTPS 解密证书。
@@ -68,7 +68,7 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/YouTub
 **② 添加 BoxJS 配置订阅**
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/youtube-bilingual.boxjs.json
+https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/youtube-bilingual.boxjs.json
 ```
 
 安装 [BoxJS](https://docs.boxjs.app/) 后，在其 **订阅** 中添加上述地址。前往 **应用 → YouTube Bilingual Subtitles**，选择翻译平台，填写 API Key 和模型后保存。

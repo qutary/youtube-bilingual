@@ -13,7 +13,7 @@
       "descs_html": [
         "选择翻译平台，填写 API Key 和模型后保存；支持双语及仅中文字幕。",
         "并发可填 1–256，字幕响应时间可填 3–30 秒；超长视频可能需要再次载入以补齐缓存。",
-        "<a href=\"https://github.com/qutary/youtube-bilingual-subtitles#安装\">安装与使用说明</a>"
+        "<a href=\"https://github.com/qutary/youtube-bilingual-subtitles#-快速安装\">安装与使用说明</a>"
       ],
       "keys": [
         "QXYTB_BETA_ENABLED",

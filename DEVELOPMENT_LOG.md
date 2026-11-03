@@ -81,7 +81,7 @@ https://github.com/qutary/youtube-bilingual-subtitles
 独立仓库建立后，正式订阅地址固定为：
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/YouTube.Bilingual.snippet
+https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/YouTube.Bilingual.snippet
 ```
 
 ### 2.2 v1.0.3-FullTrack：早期稳定基线
@@ -548,9 +548,9 @@ HAR、QX 日志和模型原始响应可能包含 Key、授权头、签名 URL、
 - **正式分支：** `main`，当前版本 v1.5.0。
 - **测试分支：** `preview-boxjs-v1`，用于后续实验；未验证的功能不应直接进入正式版。
 - **正式 QX 订阅：**  
-  https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/YouTube.Bilingual.snippet
+  https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/YouTube.Bilingual.snippet
 - **正式 BoxJS 配置：**  
-  https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/youtube-bilingual.boxjs.json
+  https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/youtube-bilingual.boxjs.json
 - **正式 README：**  
   https://github.com/qutary/youtube-bilingual-subtitles/blob/main/README.md
 
