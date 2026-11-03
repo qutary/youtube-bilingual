@@ -1,0 +1,353 @@
+{
+  "id": "qutary.youtube-bilingual.boxjs-preview-v1.sub",
+  "name": "YouTube Bilingual Subtitles · BoxJS",
+  "author": "@qutary",
+  "description": "YouTube 原生 App 字幕翻译设置",
+  "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+  "apps": [
+    {
+      "id": "qutary.youtube-bilingual.boxjs-preview-v1",
+      "name": "YouTube Bilingual Subtitles",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "descs_html": [
+        "选择翻译平台，填写 API Key 和模型后保存；支持双语及仅中文字幕。",
+        "并发可填 1–256，字幕响应时间可填 3–30 秒；超长视频可能需要再次载入以补齐缓存。",
+        "<a href=\"https://github.com/qutary/youtube-bilingual-subtitles#-快速安装\">安装与使用说明</a>"
+      ],
+      "keys": [
+        "QXYTB_BETA_ENABLED",
+        "QXYTB_BETA_DISPLAY",
+        "QXYTB_BETA_PROVIDER",
+        "QXYTB_BETA_DEEPSEEK_KEY",
+        "QXYTB_BETA_DEEPSEEK_MODEL",
+        "QXYTB_BETA_DEEPSEEK_ENDPOINT",
+        "QXYTB_BETA_DEEPSEEK_CONCURRENCY",
+        "QXYTB_BETA_VOLCENGINE_KEY",
+        "QXYTB_BETA_VOLCENGINE_MODEL",
+        "QXYTB_BETA_VOLCENGINE_ENDPOINT",
+        "QXYTB_BETA_VOLCENGINE_CONCURRENCY",
+        "QXYTB_BETA_VOLCENGINE_FAST",
+        "QXYTB_BETA_VOLCENGINE_COMPACT_BATCH",
+        "QXYTB_BETA_VOLCENGINE_LONG_FAST_START",
+        "QXYTB_BETA_OPENROUTER_KEY",
+        "QXYTB_BETA_OPENROUTER_MODEL",
+        "QXYTB_BETA_OPENROUTER_ENDPOINT",
+        "QXYTB_BETA_OPENROUTER_CONCURRENCY",
+        "QXYTB_BETA_OPENROUTER_COMPACT_BATCH",
+        "QXYTB_BETA_OPENROUTER_REASONING",
+        "QXYTB_BETA_OPENROUTER_FAST_START",
+        "QXYTB_BETA_LONG_ADAPTIVE",
+        "QXYTB_BETA_LONG_START_FOUR",
+        "QXYTB_BETA_LONG_ALIGNED_RELIABLE",
+        "QXYTB_BETA_OPENROUTER_SORT",
+        "QXYTB_BETA_CUSTOM_KEY",
+        "QXYTB_BETA_CUSTOM_MODEL",
+        "QXYTB_BETA_CUSTOM_ENDPOINT",
+        "QXYTB_BETA_JSON_MODE",
+        "QXYTB_BETA_BYPASS_CACHE",
+        "QXYTB_BETA_CACHE_EPOCH",
+        "QXYTB_BETA_RESPONSE_BUDGET"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_ENABLED",
+          "name": "开启翻译",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_DISPLAY",
+          "name": "字幕显示方式",
+          "type": "selects",
+          "val": "bilingual",
+          "items": [
+            {
+              "key": "bilingual",
+              "label": "双语：中文在上、英文在下"
+            },
+            {
+              "key": "translation",
+              "label": "仅译文：只显示中文"
+            }
+          ],
+          "desc": "未翻译的片段会保留英文。"
+        },
+        {
+          "id": "QXYTB_BETA_PROVIDER",
+          "name": "翻译 API 平台",
+          "type": "selects",
+          "val": "deepseek",
+          "items": [
+            {
+              "key": "deepseek",
+              "label": "DeepSeek"
+            },
+            {
+              "key": "volcengine",
+              "label": "火山方舟"
+            },
+            {
+              "key": "openrouter",
+              "label": "OpenRouter"
+            },
+            {
+              "key": "custom",
+              "label": "自定义 OpenAI 兼容接口 / 中转站"
+            }
+          ],
+          "desc": "每个平台独立保存配置。"
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_KEY",
+          "name": "[DeepSeek] API Key",
+          "type": "text",
+          "val": "",
+          "desc": "在本机填写，勿公开。"
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_MODEL",
+          "name": "[DeepSeek] 模型 ID",
+          "type": "text",
+          "val": "deepseek-flash",
+          "desc": "填写接口支持的模型 ID。"
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_ENDPOINT",
+          "name": "[DeepSeek] 完整 API 端点",
+          "type": "text",
+          "val": "https://api.deepseek.com/chat/completions",
+          "desc": "留空使用默认地址；支持完整 HTTPS 接口。"
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_CONCURRENCY",
+          "name": "[DeepSeek] 并发数",
+          "type": "text",
+          "val": "20",
+          "desc": "1–256 整数，默认 20；高并发可能增加费用。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_KEY",
+          "name": "[火山方舟] API Key",
+          "type": "text",
+          "val": "",
+          "desc": "在本机填写，勿公开。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_MODEL",
+          "name": "[火山方舟] 模型 / 接入点 ID",
+          "type": "text",
+          "val": "",
+          "desc": "填写模型或接入点 ID。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_ENDPOINT",
+          "name": "[火山方舟] 完整 API 端点",
+          "type": "text",
+          "val": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+          "desc": "留空使用默认 HTTPS 地址。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_CONCURRENCY",
+          "name": "[火山方舟] 并发数",
+          "type": "text",
+          "val": "10",
+          "desc": "1–256 整数，默认 10。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_FAST",
+          "name": "[火山方舟] 低延迟推理",
+          "type": "boolean",
+          "val": false,
+          "desc": "默认关闭；部分接口不支持 fast。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_COMPACT_BATCH",
+          "name": "[火山方舟] 短批次",
+          "type": "boolean",
+          "val": false,
+          "desc": "低并发可手动开启；高于 20 并发自动使用。"
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_LONG_FAST_START",
+          "name": "[火山方舟] 长视频快速启动",
+          "type": "boolean",
+          "val": true,
+          "desc": "超长视频首轮最多 24 并发。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_KEY",
+          "name": "[OpenRouter] API Key",
+          "type": "text",
+          "val": "",
+          "desc": "在本机填写，勿公开。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_MODEL",
+          "name": "[OpenRouter] 模型 ID",
+          "type": "text",
+          "val": "",
+          "desc": "填写含提供商前缀的模型 ID。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_ENDPOINT",
+          "name": "[OpenRouter] 完整 API 端点",
+          "type": "text",
+          "val": "https://openrouter.ai/api/v1/chat/completions",
+          "desc": "留空使用默认 HTTPS 地址。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_CONCURRENCY",
+          "name": "[OpenRouter] 并发数",
+          "type": "text",
+          "val": "10",
+          "desc": "1–256 整数，默认 10。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_COMPACT_BATCH",
+          "name": "[OpenRouter] 短批次",
+          "type": "boolean",
+          "val": false,
+          "desc": "低并发可手动开启；高于 20 并发自动使用。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_REASONING",
+          "name": "[OpenRouter] 模型推理强度",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "自动：GPT-6 Luna 关闭思考，其他模型保持默认"
+            },
+            {
+              "key": "none",
+              "label": "none · 完全关闭推理（低延迟）"
+            },
+            {
+              "key": "low",
+              "label": "low · 低推理强度"
+            },
+            {
+              "key": "medium",
+              "label": "medium · 中等推理强度"
+            }
+          ],
+          "desc": "auto 对 GPT-6 Luna 关闭额外思考；其他模型保持默认。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_FAST_START",
+          "name": "[OpenRouter] 快速启动",
+          "type": "boolean",
+          "val": true,
+          "desc": "高并发时首轮最多 32 个请求。"
+        },
+        {
+          "id": "QXYTB_BETA_LONG_ADAPTIVE",
+          "name": "长视频自适应批次",
+          "type": "boolean",
+          "val": true,
+          "desc": "超长视频按响应耗时自动调整翻译批次。"
+        },
+        {
+          "id": "QXYTB_BETA_LONG_START_FOUR",
+          "name": "长视频4单元起步",
+          "type": "boolean",
+          "val": true,
+          "desc": "短句为主的长视频从 4 单元起步，可自动降档。"
+        },
+        {
+          "id": "QXYTB_BETA_LONG_ALIGNED_RELIABLE",
+          "name": "长句可靠分段",
+          "type": "boolean",
+          "val": true,
+          "desc": "长句首次独立分段，降低对齐失败。"
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_SORT",
+          "name": "[OpenRouter] 路由偏好",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "自动（默认）"
+            },
+            {
+              "key": "latency",
+              "label": "低延迟优先"
+            },
+            {
+              "key": "throughput",
+              "label": "高吞吐优先"
+            }
+          ],
+          "desc": "选择自动、低延迟或高吞吐路由。"
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_KEY",
+          "name": "[自定义] API Key",
+          "type": "text",
+          "val": "",
+          "desc": "在本机填写，勿公开。"
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_MODEL",
+          "name": "[自定义] 模型 ID",
+          "type": "text",
+          "val": "",
+          "desc": "填写接口支持的模型 ID。"
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_ENDPOINT",
+          "name": "[自定义] 完整 API 端点",
+          "type": "text",
+          "val": "",
+          "desc": "填写完整 HTTPS Chat Completions 地址。"
+        },
+        {
+          "id": "QXYTB_BETA_JSON_MODE",
+          "name": "[高级] JSON 输出模式",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "自动：按平台预设"
+            },
+            {
+              "key": "on",
+              "label": "开启：发送 response_format=json_object"
+            },
+            {
+              "key": "off",
+              "label": "关闭：省略 response_format"
+            }
+          ],
+          "desc": "兼容接口拒绝 JSON 模式时可关闭。"
+        },
+        {
+          "id": "QXYTB_BETA_RESPONSE_BUDGET",
+          "name": "字幕响应时间（秒）",
+          "type": "text",
+          "val": "6.3",
+          "desc": "3–30 秒，可填 6.3、7.7、9.5 等；等待太久可能加载失败。"
+        },
+        {
+          "id": "QXYTB_BETA_BYPASS_CACHE",
+          "name": "绕过译文缓存（调试）",
+          "type": "boolean",
+          "val": false,
+          "desc": "仅用于测试；日常请关闭，避免重复计费。"
+        },
+        {
+          "id": "QXYTB_BETA_CACHE_EPOCH",
+          "name": "[高级] 译文缓存版本",
+          "type": "text",
+          "val": "1",
+          "desc": "通常保持 1；更改后旧译文可能无法复用。"
+        }
+      ]
+    }
+  ]
+}
