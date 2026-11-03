@@ -585,53 +585,53 @@ HAR、QX 日志和模型原始响应可能包含 Key、授权头、签名 URL、
 
 QX v1.5.0 发布后，项目开始支持 Shadowrocket，让用户在不安装 Quantumult X 或 BoxJS 的情况下，也可以直接在 YouTube 原生 iOS App 中使用相同的字幕翻译能力。此次工作不是重新编写翻译算法，而是**沿用已经积累的字幕解析、语义窗口、模型校验、长视频批次调度、缓存和 XML 渲染逻辑，替换代理软件相关的运行时接口**。
 
-首次开发放在独立分支 \`feature/shadowrocket-support\`，对应 [PR #1](https://github.com/qutary/youtube-bilingual-subtitles/pull/1)。QX 原有文件保持不动，Shadowrocket 新增独立的脚本、模块配置和安装说明。两个版本分别使用各自的持久化缓存，不共享 API Key 或本地存储；即使字幕翻译核心相同，也不能认为两个代理软件有相同的脚本生命周期、内存限制和网络回调行为。
+首次开发放在独立分支 `feature/shadowrocket-support`，对应 [PR #1](https://github.com/qutary/youtube-bilingual-subtitles/pull/1)。QX 原有文件保持不动，Shadowrocket 新增独立的脚本、模块配置和安装说明。两个版本分别使用各自的持久化缓存，不共享 API Key 或本地存储；即使字幕翻译核心相同，也不能认为两个代理软件有相同的脚本生命周期、内存限制和网络回调行为。
 
 主要运行时差异如下：
 
 | 功能 | Quantumult X | Shadowrocket |
 | --- | --- | --- |
-| HTTP 请求 | \`$task.fetch\` | \`$httpClient.post\` 等回调接口，包装成 Promise |
-| 持久化 | \`$prefs.valueForKey / setValueForKey\` | \`$persistentStore.read / write\` |
-| 配置入口 | BoxJS 保存设置 | 模块 \`#!arguments\` + 脚本 \`$argument\` |
-| 字幕重写 | QX \`snippet\` 的 \`script-response-body\` | 模块 \`[Script]\` 的 \`http-response\` |
-| HTTPS 解密 | QX Rewrite / MitM | Shadowrocket 模块 \`[MITM]\` |
-| 缓存命名空间 | \`QXYTB_BETA_\` | \`QXYTB_SR_\` |
+| HTTP 请求 | `$task.fetch` | `$httpClient.post` 等回调接口，包装成 Promise |
+| 持久化 | `$prefs.valueForKey / setValueForKey` | `$persistentStore.read / write` |
+| 配置入口 | BoxJS 保存设置 | 模块 `#!arguments` + 脚本 `$argument` |
+| 字幕重写 | QX `snippet` 的 `script-response-body` | 模块 `[Script]` 的 `http-response` |
+| HTTPS 解密 | QX Rewrite / MitM | Shadowrocket 模块 `[MITM]` |
+| 缓存命名空间 | `QXYTB_BETA_` | `QXYTB_SR_` |
 
-Shadowrocket 模块只处理 YouTube \`timedtext\` 字幕响应，配置所需的 MitM 域名，并尽量保持 iOS 原生客户端识别、HTTP 错误透传和翻译失败时保留原字幕的行为。移植时另外兼容 HTTP 状态码可能采用数字或状态行字符串的情况。为了降低网络扩展的并发压力，Shadowrocket 版本将可配置模型请求并发限制为 **1–64**，而 QX 版本仍沿用原有上限与配置键。
+Shadowrocket 模块只处理 YouTube `timedtext` 字幕响应，配置所需的 MitM 域名，并尽量保持 iOS 原生客户端识别、HTTP 错误透传和翻译失败时保留原字幕的行为。移植时另外兼容 HTTP 状态码可能采用数字或状态行字符串的情况。为了降低网络扩展的并发压力，Shadowrocket 版本将可配置模型请求并发限制为 **1–64**，而 QX 版本仍沿用原有上限与配置键。
 
 ### 15.2 Preview.1：完成接口替换与首次静态检查
 
-首轮提交加入 \`youtube-bilingual.shadowrocket.js\`、\`YouTube.Bilingual.shadowrocket.module\` 和专用说明文件，并尝试直接传递 JSON 格式的模块参数。随后检查并修复了脚本参数字符串的闭合引号问题；JavaScript 语法检查、模块默认参数展开和配置键映射可以通过，且已移除脚本中对 QX 专有 \`$task.fetch\` 与 \`$prefs\` 的依赖。
+首轮提交加入 `youtube-bilingual.shadowrocket.js`、`YouTube.Bilingual.shadowrocket.module` 和专用说明文件，并尝试直接传递 JSON 格式的模块参数。随后检查并修复了脚本参数字符串的闭合引号问题；JavaScript 语法检查、模块默认参数展开和配置键映射可以通过，且已移除脚本中对 QX 专有 `$task.fetch` 与 `$prefs` 的依赖。
 
 但这些检查只能说明文件**语法和参数映射在模拟环境下有效**，不能证明 Shadowrocket 已成功把真实 YouTube 字幕响应交给脚本，更不能证明 YouTube 接受了翻译后的 XML。此阶段仍属于需要真机验证的移植预览。
 
 ### 15.3 Preview.2–3：模块参数界面与中文化调整
 
-实际打开 Shadowrocket「编辑参数」后，用户发现翻译平台及字幕模式需要输入 \`deepseek\`、\`bilingual\` 等英文值，且默认留空的 \`DeepSeekKey\` 参数没有出现在界面中。这表明**模块参数声明存在，不代表客户端一定显示可编辑输入行**，也不能把 QX 的 BoxJS 下拉选择机制直接视为 Shadowrocket 的通用能力。
+实际打开 Shadowrocket「编辑参数」后，用户发现翻译平台及字幕模式需要输入 `deepseek`、`bilingual` 等英文值，且默认留空的 `DeepSeekKey` 参数没有出现在界面中。这表明**模块参数声明存在，不代表客户端一定显示可编辑输入行**，也不能把 QX 的 BoxJS 下拉选择机制直接视为 Shadowrocket 的通用能力。
 
 为改善可用性，随后调整了模块参数及脚本解析：
 
-1. API Key 改为非空占位符 \`PASTE_API_KEY_HERE\`，确保配置入口可见；脚本会拒绝未替换的占位符，避免当成有效密钥发送。
+1. API Key 改为非空占位符 `PASTE_API_KEY_HERE`，确保配置入口可见；脚本会拒绝未替换的占位符，避免当成有效密钥发送。
 2. 翻译平台默认 DeepSeek，其他平台使用「使用火山方舟」「使用OpenRouter」「使用自定义API」开关。多个平台同时打开时，脚本拒绝该配置并保留英文，不进行模糊选择。
-3. 字幕模式改为中文开关「仅显示中文字幕」：关闭为中英双语，开启为仅中文，不再要求手动输入 \`bilingual\` 或 \`translation\`。
+3. 字幕模式改为中文开关「仅显示中文字幕」：关闭为中英双语，开启为仅中文，不再要求手动输入 `bilingual` 或 `translation`。
 4. 参数传递由原先带引号的 JSON 文本调整为模块参数键值字符串，脚本增加解析兼容；配置项经检查共 **34 项**，所有声明的参数均有对应映射。
 
 这一阶段解决的是**参数可发现性、误填概率和脚本读取格式**，并不意味着 Shadowrocket 原生提供了与 BoxJS 相同的下拉控件。
 
 ### 15.4 Preview.4：字幕已经翻译，却在最终返回时退回英文
 
-用户于 2026-11-03 在 iPad 上测试 Shadowrocket：YouTube 画面仍然显示英文。代理记录里可以看到 \`www.youtube.com/api/timedtext\` 带有 **MITM** 标记，同时出现了 \`api.deepseek.com:443\` 连接。前者说明字幕流量已经经过 HTTPS 解密，后者说明有到 DeepSeek 域名的连接；**两者均不足以单独证明模型返回 HTTP 200、脚本处理成功或播放器收到中文**。当时导出的代理日志数据库也没有提供可用于完整归因的请求明细。
+用户于 2026-11-03 在 iPad 上测试 Shadowrocket：YouTube 画面仍然显示英文。代理记录里可以看到 `www.youtube.com/api/timedtext` 带有 **MITM** 标记，同时出现了 `api.deepseek.com:443` 连接。前者说明字幕流量已经经过 HTTPS 解密，后者说明有到 DeepSeek 域名的连接；**两者均不足以单独证明模型返回 HTTP 200、脚本处理成功或播放器收到中文**。当时导出的代理日志数据库也没有提供可用于完整归因的请求明细。
 
-接下来使用模拟 YouTube \`timedtext\` 响应与模拟 DeepSeek 成功译文，复现出具有确定因果关系的异常：
+接下来使用模拟 YouTube `timedtext` 响应与模拟 DeepSeek 成功译文，复现出具有确定因果关系的异常：
 
-\`\`\`text
+```text
 Semantic finished: translated=1/1
 Full-track delivery verified: 1/1
 Translation failed; original preserved: pref is not defined
-\`\`\`
+```
 
-**根因：** Shadowrocket 移植脚本在删除 QX 的旧配置适配层时，遗漏了一个仍被 \`speechOnlyXml()\` 最终字幕处理函数调用的 \`pref(name, fallback)\` 兼容函数。即使译文已经完成并通过校验，最终渲染阶段仍会抛出 \`ReferenceError\`，统一异常处理因此原样返回英文字幕。这是**代码层面确定并可复现的移植缺陷**；但没有足够的真机脚本日志证明用户当次请求一定只由这一问题造成。
+**根因：** Shadowrocket 移植脚本在删除 QX 的旧配置适配层时，遗漏了一个仍被 `speechOnlyXml()` 最终字幕处理函数调用的 `pref(name, fallback)` 兼容函数。即使译文已经完成并通过校验，最终渲染阶段仍会抛出 `ReferenceError`，统一异常处理因此原样返回英文字幕。这是**代码层面确定并可复现的移植缺陷**；但没有足够的真机脚本日志证明用户当次请求一定只由这一问题造成。
 
 修复方式是恢复该兼容函数，使其与 QX 原先禁用旧隐藏偏好设置时的行为一致，即直接返回传入的默认值。修复后，用模拟输入回归验证：
 
@@ -644,23 +644,23 @@ Translation failed; original preserved: pref is not defined
 | API Key 仍为占位符 | 拒绝发起翻译 API 请求 |
 | 浏览器客户端请求 | 旁路，不发起翻译请求 |
 
-修复被发布为 **Preview.4**，模块脚本 URL 增加 \`?v=0.1.0-preview.4\` 用于更新缓存。表中结果是**本地模拟测试**，不能替代 iPad + Shadowrocket + YouTube 的端到端验证。
+修复被发布为 **Preview.4**，模块脚本 URL 增加 `?v=0.1.0-preview.4` 用于更新缓存。表中结果是**本地模拟测试**，不能替代 iPad + Shadowrocket + YouTube 的端到端验证。
 
 ### 15.5 Shadowrocket v1.0.0 正式发布
 
-用户随后要求将 Shadowrocket 作为可公开安装的版本发布，并重新设计仓库首页。正式发布通过 [PR #2](https://github.com/qutary/youtube-bilingual-subtitles/pull/2) 合并到 \`main\`，提交为 [b124ea86](https://github.com/qutary/youtube-bilingual-subtitles/commit/b124ea865f23217e2b05f6a8e1165c8eee86cb93)。正式模块改为从 \`main\` 下载脚本，版本参数改为 \`?v=1.0.0\`；测试模块不再是公开安装入口。最初的开发 [PR #1](https://github.com/qutary/youtube-bilingual-subtitles/pull/1) 因已被 PR #2 取代而关闭，保留供追溯。
+用户随后要求将 Shadowrocket 作为可公开安装的版本发布，并重新设计仓库首页。正式发布通过 [PR #2](https://github.com/qutary/youtube-bilingual-subtitles/pull/2) 合并到 `main`，提交为 [b124ea86](https://github.com/qutary/youtube-bilingual-subtitles/commit/b124ea865f23217e2b05f6a8e1165c8eee86cb93)。正式模块改为从 `main` 下载脚本，版本参数改为 `?v=1.0.0`；测试模块不再是公开安装入口。最初的开发 [PR #1](https://github.com/qutary/youtube-bilingual-subtitles/pull/1) 因已被 PR #2 取代而关闭，保留供追溯。
 
-正式发布同时重构 README：把 Quantumult X 和 Shadowrocket 作为两个并列的安装选项，提供简明的项目介绍、能力说明、订阅链接、常见问题和隐私提示；开发迭代及故障分析则统一放在本文件中。Shadowrocket 的日常配置方法保留在独立的 \`shadowrocket/README.md\`，不再把 Preview 修复记录写入面向普通使用者的 README。
+正式发布同时重构 README：把 Quantumult X 和 Shadowrocket 作为两个并列的安装选项，提供简明的项目介绍、能力说明、订阅链接、常见问题和隐私提示；开发迭代及故障分析则统一放在本文件中。Shadowrocket 的日常配置方法保留在独立的 `shadowrocket/README.md`，不再把 Preview 修复记录写入面向普通使用者的 README。
 
 **发布状态与验证边界：** Shadowrocket v1.0.0 已在 GitHub 公开发布，JavaScript 语法、34 项模块参数映射及上述本地模拟回归通过；本次对话尚未取得修复版在真实 iPad 上**完整显示中文字幕**的最终确认。因此“已经发布”是仓库发布状态，不等于全部设备兼容性已得到实机证明。特别需要继续观察模块参数注入、API 回调、响应期限、大字幕响应体、持久化缓存与播放器实际接受字幕的情况。
 
 ## 16. 双端仓库结构整理（2026-11-03）
 
-Shadowrocket 发布后，用户提出让 QX 文件独立放入 \`qx/\` 目录，与 \`shadowrocket/\` 并列。此次整理经 [PR #3](https://github.com/qutary/youtube-bilingual-subtitles/pull/3) 合并到 \`main\`，提交为 [5adc3fe5](https://github.com/qutary/youtube-bilingual-subtitles/commit/5adc3fe503dff56a426a52d677d795576125c825)。
+Shadowrocket 发布后，用户提出让 QX 文件独立放入 `qx/` 目录，与 `shadowrocket/` 并列。此次整理经 [PR #3](https://github.com/qutary/youtube-bilingual-subtitles/pull/3) 合并到 `main`，提交为 [5adc3fe5](https://github.com/qutary/youtube-bilingual-subtitles/commit/5adc3fe503dff56a426a52d677d795576125c825)。
 
 整理后的结构：
 
-\`\`\`text
+```text
 youtube-bilingual-subtitles/
 ├── README.md
 ├── DEVELOPMENT_LOG.md
@@ -672,9 +672,9 @@ youtube-bilingual-subtitles/
     ├── README.md
     ├── YouTube.Bilingual.shadowrocket.module
     └── youtube-bilingual.shadowrocket.js
-\`\`\`
+```
 
-QX 核心脚本内容、BoxJS 的 32 个配置键与缓存标识保持不变；改动集中在文件路径和引用链接。QX \`snippet\` 改为调用 \`main/qx/youtube-bilingual.js?v=1.5.0\`，README 与本日志中供用户复制的正式订阅链接也随之更新。GitHub Raw 的旧根目录 URL **不会自动重定向**，此前已订阅旧链接的用户需要更新到新的 \`main/qx/\` 地址。Shadowrocket 正式模块的路径保持不变。
+QX 核心脚本内容、BoxJS 的 32 个配置键与缓存标识保持不变；改动集中在文件路径和引用链接。QX `snippet` 改为调用 `main/qx/youtube-bilingual.js?v=1.5.0`，README 与本日志中供用户复制的正式订阅链接也随之更新。GitHub Raw 的旧根目录 URL **不会自动重定向**，此前已订阅旧链接的用户需要更新到新的 `main/qx/` 地址。Shadowrocket 正式模块的路径保持不变。
 
 这次目录整理与 Shadowrocket 发布属于两件不同的工作：前者是仓库组织及 URL 迁移，不应被表述为翻译算法升级；后者是新代理运行时的移植。后续开发仍应分别验证两个运行时，避免把 QX 的性能或成功率直接推断为 Shadowrocket 的实测表现。
 
