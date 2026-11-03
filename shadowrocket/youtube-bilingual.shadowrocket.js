@@ -167,11 +167,14 @@
     var jsonMode=String(betaPref("JSON_MODE","auto")).trim().toLowerCase();
     if(!/^(?:auto|on|off)$/.test(jsonMode))return {enabled:true,error:"invalid JSON mode"};
     var deepConcurrency=Number(String(betaPref("DEEPSEEK_CONCURRENCY","20")).trim());
-    if(!Number.isInteger(deepConcurrency)||deepConcurrency<1||deepConcurrency>256)deepConcurrency=deepConcurrency>256?256:20;
+    if(!Number.isInteger(deepConcurrency)||deepConcurrency<1)deepConcurrency=20;
+    if(deepConcurrency>64)deepConcurrency=64;
     var volcConcurrency=Number(String(betaPref("VOLCENGINE_CONCURRENCY","10")).trim());
-    if(!Number.isInteger(volcConcurrency)||volcConcurrency<1||volcConcurrency>256)volcConcurrency=10;
+    if(!Number.isInteger(volcConcurrency)||volcConcurrency<1)volcConcurrency=10;
+    if(volcConcurrency>64)volcConcurrency=64;
     var routerConcurrency=Number(String(betaPref("OPENROUTER_CONCURRENCY","10")).trim());
-    if(!Number.isInteger(routerConcurrency)||routerConcurrency<1||routerConcurrency>256)routerConcurrency=10;
+    if(!Number.isInteger(routerConcurrency)||routerConcurrency<1)routerConcurrency=10;
+    if(routerConcurrency>64)routerConcurrency=64;
     var volcCompact=betaBoolean("VOLCENGINE_COMPACT_BATCH",false);
     var routerCompact=betaBoolean("OPENROUTER_COMPACT_BATCH",false);
     var longAdaptive=betaBoolean("LONG_ADAPTIVE",true);
