@@ -1,4 +1,4 @@
-# Shadowrocket 版本（Preview 3）
+# Shadowrocket 版本（Preview 4）
 
 这是 YouTube Bilingual Subtitles 的 Shadowrocket 初始移植版。翻译、字幕解析、语义分段、双语渲染、长视频批次调度与缓存逻辑沿用 QX v1.5.0；运行时改用 Shadowrocket 的 `$httpClient`、`$persistentStore`、`$argument` 和 `$done` 接口。
 
@@ -35,9 +35,17 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/shadow
 - 并发、JSON 输出模式、OpenRouter 推理强度/路由偏好、火山方舟快速服务等选项通过模块参数调整；并发范围为 1–64，以控制 iOS 网络扩展内存占用。
 - Shadowrocket 缓存键使用 `QXYTB_SR_` 前缀，与 QX 的缓存隔离。
 
+## Preview 4 修复与验证
+
+- 修复移植时遗漏的 `pref()` 兼容函数。此前当 DeepSeek 已成功返回译文时，脚本在最终字幕清理阶段可能出现 `pref is not defined`，从而回退到原始英文。
+- 用模拟 YouTube `timedtext` 与模型成功返回的译文完成端到端脚本测试：双语模式和仅中文模式均通过。
+- 另验证模型 HTTP 401、无效 JSON、未填写 API Key 和浏览器请求透传等分支。
+- 以上为本地模拟验证，仍需用户在真实 iPad + Shadowrocket + YouTube 环境确认字幕成功加载。
+- Script URL 升至 `?v=0.1.0-preview.4` 以刷新缓存；请在 Shadowrocket 中更新模块，必要时删除旧模块并重新导入测试版。
+
 ## 当前限制与验证状态
 
-- Preview 3 尚未在真实 iOS Shadowrocket + YouTube 原生 App 环境完成端到端验证；特别需要验证模块参数注入、脚本请求超时、字幕大响应体上限及长视频并发稳定性。
+- Preview 4 尚未在真实 iOS Shadowrocket + YouTube 原生 App 环境完成端到端验证；特别需要验证模块参数注入、脚本请求超时、字幕大响应体上限及长视频并发稳定性。
 - 响应体超过模块的 2 MiB 上限时，Shadowrocket 会跳过脚本处理，原字幕应保持透传。
 - Shadowrocket 的持久化接口没有使用 QX 的删除 API；清理缓存时将旧值写为空字符串，缓存清单仍负责控制有效条目。
 - HTTPS 解密只追加 YouTube 字幕相关域名，不会要求替换用户现有 MITM 主机列表。
