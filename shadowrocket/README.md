@@ -1,56 +1,65 @@
-# Shadowrocket 版本（Preview 4）
+# Shadowrocket 使用指南
 
-这是 YouTube Bilingual Subtitles 的 Shadowrocket 初始移植版。翻译、字幕解析、语义分段、双语渲染、长视频批次调度与缓存逻辑沿用 QX v1.5.0；运行时改用 Shadowrocket 的 `$httpClient`、`$persistentStore`、`$argument` 和 `$done` 接口。
+通过 Shadowrocket 的模块功能，在 **YouTube 官方 iOS App** 中显示中英双语或仅中文字幕，无需 BoxJS。
 
-## 测试版模块（请优先安装此地址）
+[返回项目主页](../README.md) · [反馈问题](https://github.com/qutary/youtube-bilingual-subtitles/issues)
 
-在 PR 合并前使用以下测试版订阅地址：
+## 安装模块
 
-```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/feature/shadowrocket-support/shadowrocket/YouTube.Bilingual.shadowrocket.preview.module
-```
-
-正式模块订阅地址指向 `main` 分支，合并 PR 前尚未生效；测试模块则固定加载当前开发分支。
-
-## 安装
-
-模块订阅地址：
+**模块订阅地址**
 
 ```text
 https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/shadowrocket/YouTube.Bilingual.shadowrocket.module
 ```
 
-1. 在 Shadowrocket 中打开「配置 → 模块 → +」，添加上面的模块地址。已安装旧版时，在模块页执行「更新模块」或重新导入测试版。
-2. 对当前使用的配置启用 HTTPS 解密，安装并信任 Shadowrocket CA 证书。
-3. 在模块「编辑参数」中填写当前平台的 API Key（将 `PASTE_API_KEY_HERE` 替换为真实密钥）。默认 DeepSeek；如使用火山方舟、OpenRouter 或自定义 API，则仅开启对应的一个开关并填写模型 ID。
-4. 打开 YouTube 原生 App，在 CC 中选择 English 或 English (auto-generated) 原字幕轨。
-5. 首次先用短视频验证，再测试长视频与缓存复用。
+1. 打开 **Shadowrocket → 配置 → 模块 → +**，粘贴订阅地址并启用模块。
+2. 在当前配置中开启 **HTTPS 解密（MitM）**，安装并信任 Shadowrocket CA 证书。
+3. 返回模块列表，打开 **YouTube Bilingual Subtitles · Shadowrocket → 编辑参数**。
+4. 将当前翻译平台的 API Key 占位符替换为真实 Key，保存设置。
+5. 打开 **YouTube 官方 App**，选择 **English / English (auto-generated)** 原字幕轨。
 
-## 配置
+> [!TIP]
+> 已安装旧模块时，先尝试在 Shadowrocket 中更新模块。若参数界面没有更新，可以删除旧模块后重新添加以上正式订阅地址。
 
-- 字幕显示：**「仅显示中文字幕」关闭**时显示双语（中文在上、英文在下），**开启**时只显示中文字幕。无需手动输入英文模式值。
-- 翻译平台：默认使用 DeepSeek；切换至火山方舟、OpenRouter、自定义接口时，仅开启对应的一个开关，其余保持关闭。
-- API Key：在「编辑参数」中找到 `DeepSeekKey` 等相应字段，将灰色默认占位符 `PASTE_API_KEY_HERE` 替换成真实 API Key；不要把密钥公开。
-- 响应预算：3–30 秒，默认 6.3 秒；预算越长，播放器放弃加载的风险也越高。
-- 并发、JSON 输出模式、OpenRouter 推理强度/路由偏好、火山方舟快速服务等选项通过模块参数调整；并发范围为 1–64，以控制 iOS 网络扩展内存占用。
-- Shadowrocket 缓存键使用 `QXYTB_SR_` 前缀，与 QX 的缓存隔离。
+## 配置说明
 
-## Preview 4 修复与验证
+默认使用 **DeepSeek**，不需要开启任何额外平台开关。最常用的参数如下：
 
-- 修复移植时遗漏的 `pref()` 兼容函数。此前当 DeepSeek 已成功返回译文时，脚本在最终字幕清理阶段可能出现 `pref is not defined`，从而回退到原始英文。
-- 用模拟 YouTube `timedtext` 与模型成功返回的译文完成端到端脚本测试：双语模式和仅中文模式均通过。
-- 另验证模型 HTTP 401、无效 JSON、未填写 API Key 和浏览器请求透传等分支。
-- 以上为本地模拟验证，仍需用户在真实 iPad + Shadowrocket + YouTube 环境确认字幕成功加载。
-- Script URL 升至 `?v=0.1.0-preview.4` 以刷新缓存；请在 Shadowrocket 中更新模块，必要时删除旧模块并重新导入测试版。
+| 参数 | 用途 |
+| --- | --- |
+| **启用翻译** | 关闭后保留原始字幕 |
+| **仅显示中文字幕** | 关闭：中英双语；开启：只显示中文 |
+| **DeepSeekKey** | 将 `PASTE_API_KEY_HERE` 替换为自己的 DeepSeek API Key |
+| **DeepSeekModel** | 默认 `deepseek-flash` |
+| **DeepSeek并发** | 默认 20，最大 64 |
+| **ResponseBudget** | 等待翻译的预算，默认 6.3 秒，可设 3–30 秒 |
 
-## 当前限制与验证状态
+### 更换翻译平台
 
-- Preview 4 尚未在真实 iOS Shadowrocket + YouTube 原生 App 环境完成端到端验证；特别需要验证模块参数注入、脚本请求超时、字幕大响应体上限及长视频并发稳定性。
-- 响应体超过模块的 2 MiB 上限时，Shadowrocket 会跳过脚本处理，原字幕应保持透传。
-- Shadowrocket 的持久化接口没有使用 QX 的删除 API；清理缓存时将旧值写为空字符串，缓存清单仍负责控制有效条目。
-- HTTPS 解密只追加 YouTube 字幕相关域名，不会要求替换用户现有 MITM 主机列表。
-- API Key 只通过本机模块参数传递；不要分享包含密钥的模块参数、配置导出或日志。
+如需使用其他翻译服务，**只开启以下一个开关**，并填写对应的 Key 和模型 ID：
 
-## 排障信息
+| 开关 | 需要配置 |
+| --- | --- |
+| **使用火山方舟** | `火山Key`、`火山Model` |
+| **使用OpenRouter** | `OpenRouterKey`、`OpenRouterModel` |
+| **使用自定义API** | `CustomKey`、`CustomModel`、`CustomEndpoint` |
 
-若字幕未翻译，先检查 HTTPS 解密/证书信任、模块是否启用、原字幕轨是否为英文、当前平台的 API Key 和模型是否填写正确。提交日志前请删除 API Key、Authorization、Cookie、视频 URL 中的签名参数及其他令牌。
+不要同时启用多个平台开关。模型 ID 应使用服务商实际提供的名称；`ENTER_MODEL_ID` 是占位符，不是有效模型。自定义接口须使用完整的 HTTPS Chat Completions 地址。
+
+### 高级参数
+
+- **并发**：可设置 1–64；更高并发可能增大网络扩展内存压力和 API 请求费用。
+- **ResponseBudget**：3–30 秒；等待过长时 YouTube 可能提前放弃加载。
+- **BypassCache**：默认关闭。只有检查缓存或重新翻译时才建议临时开启。
+- **缓存**：与 QX 版本分开保存；再次加载视频可复用已完成的字幕片段。
+
+## 常见问题
+
+**没有中文字幕：** 检查模块是否启用、证书是否受信任、MitM 是否生效、英文字幕轨是否已选择，以及 API Key 与模型是否填写正确。
+
+**只有部分中文：** 翻译结果按响应预算返回，尚未完成的片段会保留英文。退出并重新进入视频可能复用缓存、继续补齐。
+
+**提示「加载字幕时出错」：** 先使用默认的 6.3 秒预算，检查网络与翻译服务是否可用，再尝试重新进入视频。若持续失败，请在 [GitHub Issues](https://github.com/qutary/youtube-bilingual-subtitles/issues) 描述设备、系统版本、视频字幕类型和复现步骤。
+
+> [!IMPORTANT]
+> 本工具会对字幕相关 HTTPS 请求进行解密与改写。**待翻译的字幕文本会发送到你配置的 AI 服务**。请勿公开 API Key、包含 Key 的模块导出、完整 HAR 或未经脱敏的日志。该模块面向 YouTube iOS 原生 App，不保证在所有视频、字幕格式和客户端版本上正常工作。
