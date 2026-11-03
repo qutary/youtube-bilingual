@@ -36,7 +36,7 @@
 
 ## Shadowrocket 版本（Preview 1）
 
-仓库新增独立的 Shadowrocket 移植版，使用 Shadowrocket 原生 Module 参数配置，不需要 BoxJS。翻译核心沿用 QX v1.5.0；网络请求、持久化和参数读取改为 Shadowrocket 原生接口。当前为 **Preview 3**，翻译平台及字幕显示使用中文开关，API Key 参数提供可编辑占位符；尚待真实 iOS 设备端到端验证。
+仓库新增独立的 Shadowrocket 移植版，使用 Shadowrocket 原生 Module 参数配置，不需要 BoxJS。翻译核心沿用 QX v1.5.0；网络请求、持久化和参数读取改为 Shadowrocket 原生接口。当前为 **Preview 4**，修复了翻译成功后因遗失 `pref()` 函数而回退英文的兼容性问题，翻译平台及字幕显示使用中文开关，API Key 参数提供可编辑占位符；已通过模拟字幕请求测试，仍待真实 iOS 设备端到端验证。
 
 当前 PR 分支可先使用 [Shadowrocket Preview 模块](https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/feature/shadowrocket-support/shadowrocket/YouTube.Bilingual.shadowrocket.preview.module) 进行真机验证；正式模块地址将在 PR 合并后生效。
 
