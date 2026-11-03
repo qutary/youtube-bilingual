@@ -30,7 +30,12 @@
           return;
         }
         response = response || {};
-        var status = Number(response.statusCode || response.status || 0);
+        var statusRaw = response.statusCode || response.status || 0;
+        var status = Number(statusRaw);
+        if (!isFinite(status)) {
+          var statusMatch = String(statusRaw).match(/\\b(\\d{3})\\b/);
+          status = statusMatch ? Number(statusMatch[1]) : 0;
+        }
         var responseBody = data;
         if (responseBody === undefined || responseBody === null) responseBody = response.body || "";
         resolve({
@@ -1542,7 +1547,12 @@
       "; display="+runtimeConfig.display+"; Key configured=YES; settings=module arguments; cache="+(runtimeConfig.bypassCache?"BYPASS":"enabled"));
     var responseHeaders=($response && $response.headers) || {};
     var contentType=String(responseHeaders["Content-Type"] || responseHeaders["content-type"] || "unknown").split(";")[0];
-    var responseStatus=Number(($response && ($response.statusCode || $response.status)) || 0);
+    var responseStatusRaw=($response && ($response.statusCode || $response.status)) || 0;
+    var responseStatus=Number(responseStatusRaw);
+    if(!isFinite(responseStatus)){
+      var responseStatusMatch=String(responseStatusRaw).match(/\\b(\\d{3})\\b/);
+      responseStatus=responseStatusMatch?Number(responseStatusMatch[1]):0;
+    }
     log("v1.5.0 timedtext intercepted; layout=text-break; origin status="+(responseStatus||"unknown")+
       "; content-type="+contentType+"; body length="+input.length);
     // An origin error or HTML response cannot be translated; preserve it without extra requests.
