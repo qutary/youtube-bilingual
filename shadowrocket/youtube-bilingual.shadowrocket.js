@@ -33,7 +33,7 @@
         var statusRaw = response.statusCode || response.status || 0;
         var status = Number(statusRaw);
         if (!isFinite(status)) {
-          var statusMatch = String(statusRaw).match(/\\b(\\d{3})\\b/);
+          var statusMatch = String(statusRaw).match(/[0-9]{3}/);
           status = statusMatch ? Number(statusMatch[1]) : 0;
         }
         var responseBody = data;
@@ -1550,7 +1550,7 @@
     var responseStatusRaw=($response && ($response.statusCode || $response.status)) || 0;
     var responseStatus=Number(responseStatusRaw);
     if(!isFinite(responseStatus)){
-      var responseStatusMatch=String(responseStatusRaw).match(/\\b(\\d{3})\\b/);
+      var responseStatusMatch=String(responseStatusRaw).match(/[0-9]{3}/);
       responseStatus=responseStatusMatch?Number(responseStatusMatch[1]):0;
     }
     log("v1.5.0 timedtext intercepted; layout=text-break; origin status="+(responseStatus||"unknown")+
