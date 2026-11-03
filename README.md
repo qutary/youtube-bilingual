@@ -34,6 +34,23 @@
 
 **注意：** QX 字幕订阅负责执行重写；BoxJS 订阅只提供配置界面，二者都要安装。同一时间**只启用一个** YouTube 字幕重写，请停用旧测试版或其他同类脚本，避免互相覆盖。不需要运行旧版的 `set-deepseek-local.js`。
 
+## Shadowrocket 版本（Preview 1）
+
+仓库新增独立的 Shadowrocket 移植版，使用 Shadowrocket 原生 Module 参数配置，不需要 BoxJS。翻译核心沿用 QX v1.5.0；网络请求、持久化和参数读取改为 Shadowrocket 原生接口。该版本目前属于 **Preview 1**，尚待真实 iOS 设备端到端验证。
+
+模块订阅地址：
+
+```text
+https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/shadowrocket/YouTube.Bilingual.shadowrocket.module
+```
+
+1. 在 Shadowrocket「配置 → 模块 → +」中添加模块地址。
+2. 对当前配置启用 HTTPS 解密，安装并信任 Shadowrocket CA 证书。
+3. 打开模块「编辑参数」，选择翻译平台并填写对应 API Key、模型 ID。
+4. 在 YouTube 原生 App 中选择 English / English (auto-generated) 原字幕轨。
+
+Shadowrocket 版本不使用 BoxJS，缓存使用独立的 `QXYTB_SR_` 前缀。详细说明与已知限制见 [Shadowrocket README](shadowrocket/README.md)。
+
 ## 常用设置
 
 | 设置 | 说明 |
