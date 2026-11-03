@@ -6,14 +6,14 @@
   "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
   "apps": [
     {
-      "id": "qutary.youtube-bilingual.boxjs-preview-v1",
-      "name": "🎬 YouTube 双语字幕 · 常用设置",
+      "id": "qutary.youtube-bilingual.boxjs.common",
+      "name": "🎬 常用设置",
       "author": "@qutary",
       "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
       "descs_html": [
-        "首先设置字幕模式和翻译平台。默认使用 DeepSeek，直接在下方填写 API Key。",
-        "火山方舟、OpenRouter 和自定义 API 请进入本订阅对应配置页；保存后重新进入视频生效。",
-        "<a href=\"https://github.com/qutary/youtube-bilingual-subtitles#-快速安装\">安装与使用指南</a>"
+        "字幕模式、翻译平台及等待时间在这里设置，日常使用只需调整前几项。",
+        "长视频、JSON 模式与缓存等高级选项位于下方；DeepSeek 的 API Key 和模型请打开独立配置页。",
+        "<a href=\"https://github.com/qutary/youtube-bilingual-subtitles#-快速安装\">安装与使用说明</a>"
       ],
       "keys": [
         "QXYTB_BETA_ENABLED",
@@ -100,20 +100,6 @@
           "desc": "默认 DeepSeek；使用其他平台时，在对应服务配置页面填写密钥。"
         },
         {
-          "id": "QXYTB_BETA_DEEPSEEK_KEY",
-          "name": "DeepSeek · API Key",
-          "type": "text",
-          "val": "",
-          "desc": "只保存在自己的本机配置，不要公开密钥或包含密钥的截图。"
-        },
-        {
-          "id": "QXYTB_BETA_DEEPSEEK_MODEL",
-          "name": "DeepSeek · 模型 ID",
-          "type": "text",
-          "val": "deepseek-flash",
-          "desc": "默认 deepseek-flash，可替换为实际支持的模型。"
-        },
-        {
           "id": "QXYTB_BETA_RESPONSE_BUDGET",
           "name": "字幕等待时间（秒）",
           "type": "text",
@@ -121,15 +107,103 @@
           "desc": "默认 6.3 秒，范围 3–30 秒；等待过长可能导致播放器提前结束加载。"
         },
         {
+          "id": "QXYTB_BETA_LONG_ADAPTIVE",
+          "name": "高级 · 长视频自适应批次",
+          "type": "boolean",
+          "val": true,
+          "desc": "超长视频按响应耗时自动调整翻译批次。"
+        },
+        {
+          "id": "QXYTB_BETA_LONG_START_FOUR",
+          "name": "高级 · 长视频 4 单元起步",
+          "type": "boolean",
+          "val": true,
+          "desc": "短句为主的长视频从 4 单元起步，可自动降档。"
+        },
+        {
+          "id": "QXYTB_BETA_LONG_ALIGNED_RELIABLE",
+          "name": "高级 · 长句可靠分段",
+          "type": "boolean",
+          "val": true,
+          "desc": "长句首次独立分段，降低对齐失败。"
+        },
+        {
+          "id": "QXYTB_BETA_JSON_MODE",
+          "name": "高级 · JSON 输出模式",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "自动：按平台预设"
+            },
+            {
+              "key": "on",
+              "label": "开启：发送 response_format=json_object"
+            },
+            {
+              "key": "off",
+              "label": "关闭：省略 response_format"
+            }
+          ],
+          "desc": "兼容接口拒绝 JSON 模式时可关闭。"
+        },
+        {
+          "id": "QXYTB_BETA_BYPASS_CACHE",
+          "name": "高级 · 绕过译文缓存（调试）",
+          "type": "boolean",
+          "val": false,
+          "desc": "仅用于测试；日常请关闭，避免重复计费。"
+        },
+        {
+          "id": "QXYTB_BETA_CACHE_EPOCH",
+          "name": "高级 · 缓存版本（谨慎修改）",
+          "type": "text",
+          "val": "1",
+          "desc": "通常保持 1；更改后旧译文可能无法复用。"
+        }
+      ]
+    },
+    {
+      "id": "qutary.youtube-bilingual.boxjs.deepseek",
+      "name": "🔷 DeepSeek · 服务配置",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "descs_html": [
+        "默认翻译平台为 DeepSeek；请在此填写 API Key，模型默认 deepseek-flash。",
+        "通常无需修改并发数及 API 地址。"
+      ],
+      "keys": [
+        "QXYTB_BETA_DEEPSEEK_KEY",
+        "QXYTB_BETA_DEEPSEEK_MODEL",
+        "QXYTB_BETA_DEEPSEEK_CONCURRENCY",
+        "QXYTB_BETA_DEEPSEEK_ENDPOINT"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_KEY",
+          "name": "API Key",
+          "type": "text",
+          "val": "",
+          "desc": "只保存在自己的本机配置，不要公开密钥或包含密钥的截图。"
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_MODEL",
+          "name": "模型 ID",
+          "type": "text",
+          "val": "deepseek-flash",
+          "desc": "默认 deepseek-flash，可替换为实际支持的模型。"
+        },
+        {
           "id": "QXYTB_BETA_DEEPSEEK_CONCURRENCY",
-          "name": "DeepSeek · 并发数",
+          "name": "并发数",
           "type": "text",
           "val": "20",
           "desc": "默认 20，范围 1–256；并发越高不一定越快。"
         },
         {
           "id": "QXYTB_BETA_DEEPSEEK_ENDPOINT",
-          "name": "DeepSeek · API 地址（可选）",
+          "name": "API 地址（可选）",
           "type": "text",
           "val": "https://api.deepseek.com/chat/completions",
           "desc": "保持默认即可；仅自定义服务地址时修改。"
@@ -350,82 +424,6 @@
           "type": "text",
           "val": "",
           "desc": "必须填写完整 HTTPS Chat Completions 地址。"
-        }
-      ]
-    },
-    {
-      "id": "qutary.youtube-bilingual.boxjs.advanced",
-      "name": "⚙️ 高级设置 · 长视频与缓存",
-      "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
-      "descs_html": [
-        "日常使用不需要修改这里；建议保持默认设置。",
-        "改变缓存和分批参数可能影响翻译成本与字幕加载成功率。"
-      ],
-      "keys": [
-        "QXYTB_BETA_LONG_ADAPTIVE",
-        "QXYTB_BETA_LONG_START_FOUR",
-        "QXYTB_BETA_LONG_ALIGNED_RELIABLE",
-        "QXYTB_BETA_JSON_MODE",
-        "QXYTB_BETA_BYPASS_CACHE",
-        "QXYTB_BETA_CACHE_EPOCH"
-      ],
-      "settings": [
-        {
-          "id": "QXYTB_BETA_LONG_ADAPTIVE",
-          "name": "长视频 · 自适应批次",
-          "type": "boolean",
-          "val": true,
-          "desc": "超长视频按响应耗时自动调整翻译批次。"
-        },
-        {
-          "id": "QXYTB_BETA_LONG_START_FOUR",
-          "name": "长视频 · 4 单元起步",
-          "type": "boolean",
-          "val": true,
-          "desc": "短句为主的长视频从 4 单元起步，可自动降档。"
-        },
-        {
-          "id": "QXYTB_BETA_LONG_ALIGNED_RELIABLE",
-          "name": "长句 · 可靠分段",
-          "type": "boolean",
-          "val": true,
-          "desc": "长句首次独立分段，降低对齐失败。"
-        },
-        {
-          "id": "QXYTB_BETA_JSON_MODE",
-          "name": "JSON 输出模式",
-          "type": "selects",
-          "val": "auto",
-          "items": [
-            {
-              "key": "auto",
-              "label": "自动：按平台预设"
-            },
-            {
-              "key": "on",
-              "label": "开启：发送 response_format=json_object"
-            },
-            {
-              "key": "off",
-              "label": "关闭：省略 response_format"
-            }
-          ],
-          "desc": "兼容接口拒绝 JSON 模式时可关闭。"
-        },
-        {
-          "id": "QXYTB_BETA_BYPASS_CACHE",
-          "name": "绕过译文缓存（仅调试）",
-          "type": "boolean",
-          "val": false,
-          "desc": "仅用于测试；日常请关闭，避免重复计费。"
-        },
-        {
-          "id": "QXYTB_BETA_CACHE_EPOCH",
-          "name": "缓存版本（谨慎修改）",
-          "type": "text",
-          "val": "1",
-          "desc": "通常保持 1；更改后旧译文可能无法复用。"
         }
       ]
     }
