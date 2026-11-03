@@ -1,11 +1,8 @@
 <div align="center">
-
-# 🎬 YouTube Bilingual Subtitles
-
-**在 YouTube 原生 iOS App 中，直接观看中英双语字幕。**
-
-无需更换播放器、安装浏览器扩展，也不需要搭建独立翻译服务器。  
-支持 Quantumult X 与 Shadowrocket，使用自己的 AI 翻译 API。
+  <h1>🎬 YouTube Bilingual Subtitles</h1>
+  <p><strong>在 YouTube 原生 iOS App 中，直接观看中英双语字幕。</strong></p>
+  <p>无需更换播放器、安装浏览器扩展，也不需要搭建独立翻译服务器。<br />
+  支持 Quantumult X 与 Shadowrocket，使用自己的 AI 翻译 API。</p>
 
 <p>
   <img src="https://img.shields.io/badge/Platform-iOS%20%2F%20iPadOS-365EAA?style=flat-square" alt="iOS / iPadOS" />
@@ -14,7 +11,12 @@
   <img src="https://img.shields.io/badge/Translation-Bring%20Your%20Own%20API-7256B8?style=flat-square" alt="自备翻译 API" />
 </p>
 
-[**快速安装**](#-快速安装) · [功能介绍](#-核心功能) · [常见问题](#-常见问题) · [问题反馈](https://github.com/qutary/youtube-bilingual-subtitles/issues)
+<p>
+  <a href="#-快速安装"><strong>快速安装</strong></a> ·
+  <a href="#-核心功能">功能介绍</a> ·
+  <a href="#-常见问题">常见问题</a> ·
+  <a href="https://github.com/qutary/youtube-bilingual-subtitles/issues">问题反馈</a>
+</p>
 
 </div>
 
