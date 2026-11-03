@@ -71,7 +71,7 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/You
 https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/youtube-bilingual.boxjs.json
 ```
 
-安装 [BoxJS](https://docs.boxjs.app/) 后，在其 **订阅** 中添加上述地址并刷新。前往 **应用 → 🎬 YouTube 双语字幕 · 常用设置**，选择字幕显示方式和翻译平台；默认 DeepSeek 的 API Key、模型及响应时间可直接在此设置。使用火山方舟、OpenRouter 或自定义 API 时，请再进入对应的独立配置页面填写 Key 与模型，保存后重新进入视频。
+安装 [BoxJS](https://docs.boxjs.app/) 后，在其 **订阅** 中添加上述地址并刷新。前往 **应用 → 🎬 常用设置** 选择字幕显示方式与翻译平台，等待时间、长视频和缓存等选项也在此页面。然后打开对应的 **DeepSeek / 火山方舟 / OpenRouter / 自定义 API · 服务配置** 页面填写 API Key 和模型。保存后重新进入视频生效。
 
 **③ 打开 YouTube 字幕**
 
