@@ -36,7 +36,7 @@
 
 ## Shadowrocket 版本（Preview 1）
 
-仓库新增独立的 Shadowrocket 移植版，使用 Shadowrocket 原生 Module 参数配置，不需要 BoxJS。翻译核心沿用 QX v1.5.0；网络请求、持久化和参数读取改为 Shadowrocket 原生接口。该版本目前属于 **Preview 1**，尚待真实 iOS 设备端到端验证。
+仓库新增独立的 Shadowrocket 移植版，使用 Shadowrocket 原生 Module 参数配置，不需要 BoxJS。翻译核心沿用 QX v1.5.0；网络请求、持久化和参数读取改为 Shadowrocket 原生接口。当前为 **Preview 3**，翻译平台及字幕显示使用中文开关，API Key 参数提供可编辑占位符；尚待真实 iOS 设备端到端验证。
 
 当前 PR 分支可先使用 [Shadowrocket Preview 模块](https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/feature/shadowrocket-support/shadowrocket/YouTube.Bilingual.shadowrocket.preview.module) 进行真机验证；正式模块地址将在 PR 合并后生效。
 
@@ -48,7 +48,7 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/shadow
 
 1. 在 Shadowrocket「配置 → 模块 → +」中添加模块地址。
 2. 对当前配置启用 HTTPS 解密，安装并信任 Shadowrocket CA 证书。
-3. 打开模块「编辑参数」，选择翻译平台并填写对应 API Key、模型 ID。
+3. 打开模块「编辑参数」，默认使用 DeepSeek，并将 `DeepSeekKey` 的 `PASTE_API_KEY_HERE` 改为自己的 API Key；按需开启「仅显示中文字幕」。其他平台使用相应中文开关切换。
 4. 在 YouTube 原生 App 中选择 English / English (auto-generated) 原字幕轨。
 
 Shadowrocket 版本不使用 BoxJS，缓存使用独立的 `QXYTB_SR_` 前缀。详细说明与已知限制见 [Shadowrocket README](shadowrocket/README.md)。
