@@ -1,4 +1,4 @@
-/* YouTube bilingual captions; translation core derived from QX v1.5.0; Shadowrocket adapter preview.1 */
+/* YouTube bilingual captions; translation core derived from QX v1.5.0; Shadowrocket v1.0.0 */
 (function () {
   "use strict";
   function srStoreRead(key) {
