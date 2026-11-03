@@ -107,7 +107,7 @@
   var srArguments = readShadowrocketArguments();
   var srArgumentMap = {
     ENABLED: "启用翻译",
-    DISPLAY: "字幕模式",
+    TRANSLATION_ONLY: "仅显示中文字幕",
     USE_VOLCENGINE: "使用火山方舟",
     USE_OPENROUTER: "使用OpenRouter",
     USE_CUSTOM: "使用自定义API",
@@ -173,8 +173,8 @@
     };
     if(!Object.prototype.hasOwnProperty.call(presets,provider))return {enabled:true,error:"unsupported provider"};
     var preset=presets[provider],prefix=provider.toUpperCase()+"_";
-    var display=String(betaPref("DISPLAY","bilingual")).trim().toLowerCase();
-    if(display!=="bilingual"&&display!=="translation")return {enabled:true,error:"invalid display mode"};
+    // UI: 「仅显示中文字幕」关闭=双语，开启=仅中文；无需输入英文枚举值。
+    var display=betaBoolean("TRANSLATION_ONLY",false)?"translation":"bilingual";
     var key=String(betaPref(prefix+"KEY","")).trim();
     if(!key||key.length>4096||/[\s\x00-\x1f\x7f]/.test(key)||/^(?:PASTE_|YOUR_|<)/i.test(key))
       return {enabled:true,error:"missing or invalid API Key"};
