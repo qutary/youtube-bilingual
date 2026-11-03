@@ -21,7 +21,7 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/shadow
 - 字幕模式：`bilingual`（中文在上、英文在下）或 `translation`（仅中文）。
 - 平台：`deepseek`、`volcengine`、`openrouter`、`custom`。
 - 响应预算：3–30 秒，默认 6.3 秒；预算越长，播放器放弃加载的风险也越高。
-- 并发、JSON 输出模式、OpenRouter 推理强度/路由偏好、火山方舟快速服务等选项通过模块参数调整。
+- 并发、JSON 输出模式、OpenRouter 推理强度/路由偏好、火山方舟快速服务等选项通过模块参数调整；并发范围为 1–64，以控制 iOS 网络扩展内存占用。
 - Shadowrocket 缓存键使用 `QXYTB_SR_` 前缀，与 QX 的缓存隔离。
 
 ## 当前限制与验证状态
