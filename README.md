@@ -38,6 +38,8 @@
 
 仓库新增独立的 Shadowrocket 移植版，使用 Shadowrocket 原生 Module 参数配置，不需要 BoxJS。翻译核心沿用 QX v1.5.0；网络请求、持久化和参数读取改为 Shadowrocket 原生接口。该版本目前属于 **Preview 1**，尚待真实 iOS 设备端到端验证。
 
+当前 PR 分支可先使用 [Shadowrocket Preview 模块](https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/feature/shadowrocket-support/shadowrocket/YouTube.Bilingual.shadowrocket.preview.module) 进行真机验证；正式模块地址将在 PR 合并后生效。
+
 模块订阅地址：
 
 ```text
