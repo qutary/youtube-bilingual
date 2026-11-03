@@ -520,6 +520,9 @@
     return String(s||"").replace(/[\[(（]\s*(?:music|background music|instrumental music|applause|clapping|laughter|laughing|chuckles|cheering|crowd cheering|sound effects?|thunder(?: rumbling)?|wind(?: blowing)?|birds? chirping|音乐|背景音乐|掌声|笑声|欢呼|音效|雷声|风声)\s*[\])）]/gi,"")
       .replace(/[ \t]{2,}/g," ");
   }
+  // QX compatibility: a legacy feature toggle in speechOnlyXml still calls pref().
+  // Legacy hidden preferences were disabled upstream; preserve the default behavior.
+  function pref(name, fallback){ return fallback; }
   function speechOnlyXml(doc){
     if(pref("SPEECH_ONLY","true")==="false")return doc;
     if(!/^\s*(?:<\?xml[^>]*>\s*)?<(?:timedtext|transcript)\b/i.test(doc))return doc;
