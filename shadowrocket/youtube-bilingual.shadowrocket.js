@@ -84,8 +84,21 @@
       if (typeof $argument === "string") {
         var raw = $argument.trim();
         if (!raw) return {};
-        var parsed = JSON.parse(raw);
-        return parsed && typeof parsed === "object" ? parsed : {};
+        if (raw.charAt(0) === "{") {
+          var parsed = JSON.parse(raw);
+          return parsed && typeof parsed === "object" ? parsed : {};
+        }
+        var values = {};
+        raw.split("&").forEach(function (segment) {
+          var at = segment.indexOf("=");
+          if (at < 0) return;
+          try {
+            var name = decodeURIComponent(segment.slice(0, at).replace(/\+/g, " "));
+            var value = decodeURIComponent(segment.slice(at + 1).replace(/\+/g, " "));
+            values[name] = value;
+          } catch (_) {}
+        });
+        return values;
       }
       if (typeof $argument === "object" && $argument) return $argument;
     } catch (_) {}
@@ -95,7 +108,9 @@
   var srArgumentMap = {
     ENABLED: "启用翻译",
     DISPLAY: "字幕模式",
-    PROVIDER: "翻译平台",
+    USE_VOLCENGINE: "使用火山方舟",
+    USE_OPENROUTER: "使用OpenRouter",
+    USE_CUSTOM: "使用自定义API",
     DEEPSEEK_KEY: "DeepSeekKey",
     DEEPSEEK_MODEL: "DeepSeekModel",
     DEEPSEEK_ENDPOINT: "DeepSeekEndpoint",
@@ -141,7 +156,15 @@
   function readRuntimeConfig(){
     var enabled=betaBoolean("ENABLED",true);
     if(!enabled)return {enabled:false};
-    var provider=String(betaPref("PROVIDER","deepseek")).trim().toLowerCase();
+    var provider="deepseek";
+    var useVolcengine=betaBoolean("USE_VOLCENGINE",false);
+    var useOpenrouter=betaBoolean("USE_OPENROUTER",false);
+    var useCustom=betaBoolean("USE_CUSTOM",false);
+    if(Number(useVolcengine)+Number(useOpenrouter)+Number(useCustom)>1)
+      return {enabled:true,error:"please enable only one provider switch"};
+    if(useVolcengine)provider="volcengine";
+    else if(useOpenrouter)provider="openrouter";
+    else if(useCustom)provider="custom";
     var presets={
       deepseek:{model:"deepseek-flash",endpoint:"https://api.deepseek.com/chat/completions"},
       volcengine:{model:"",endpoint:"https://ark.cn-beijing.volces.com/api/v3/chat/completions"},
@@ -156,10 +179,11 @@
     if(!key||key.length>4096||/[\s\x00-\x1f\x7f]/.test(key)||/^(?:PASTE_|YOUR_|<)/i.test(key))
       return {enabled:true,error:"missing or invalid API Key"};
     var model=String(betaPref(prefix+"MODEL",preset.model)).trim();
-    if(!model||model.length>256||/[\x00-\x1f\x7f]/.test(model))return {enabled:true,error:"missing or invalid model ID"};
+    if(!model||model.length>256||/[\x00-\x1f\x7f]/.test(model)||/^(?:ENTER_|PASTE_|YOUR_|MODEL_ID_HERE)/i.test(model))return {enabled:true,error:"missing or invalid model ID"};
     var endpoint=String(betaPref(prefix+"ENDPOINT",preset.endpoint)).trim();
     // A blank built-in endpoint resets to that provider's preset, not another profile.
     if(!endpoint)endpoint=preset.endpoint;
+    if(/example\.invalid/i.test(endpoint))return {enabled:true,error:"configure a real custom HTTPS endpoint"};
     var match=/^https:\/\/([a-z0-9.-]+)(?::([0-9]{1,5}))?(\/[^\s?#]*)$/i.exec(endpoint);
     if(!match||endpoint.length>2048||match[1].indexOf("..")!==-1||!/[a-z0-9]$/i.test(match[1])||
        !/^[a-z0-9]/i.test(match[1])||(match[2]&&(Number(match[2])<1||Number(match[2])>65535)))
