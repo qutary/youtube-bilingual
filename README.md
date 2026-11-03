@@ -156,7 +156,6 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/you
 ## 📚 文档与反馈
 
 - [Shadowrocket 使用指南](shadowrocket/README.md)
-- [Development Log · 开发记录](DEVELOPMENT_LOG.md)
 - [提交问题或建议](https://github.com/qutary/youtube-bilingual-subtitles/issues)
 
 欢迎提交可复现的问题、改进建议和 Pull Request。提供日志时，请先去除 API Key、Authorization、Cookie 以及 URL 中的签名参数。
