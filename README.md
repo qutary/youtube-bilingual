@@ -6,7 +6,7 @@
 
 支持 Shadowrocket 和 Quantumult X，翻译使用自己的 AI API。
 
-[安装](#安装) · [字幕效果](#字幕效果) · [常见问题](#常见问题) · [反馈问题](https://github.com/qutary/youtube-bilingual-subtitles/issues)
+[安装](#安装) · [常见问题](#常见问题) · [反馈问题](https://github.com/qutary/youtube-bilingual-subtitles/issues)
 
 </div>
 
