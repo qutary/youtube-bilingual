@@ -1,65 +1,73 @@
-# Shadowrocket 使用指南
+# Shadowrocket 安装与使用
 
-通过 Shadowrocket 的模块功能，在 **YouTube 官方 iOS App** 中显示中英双语或仅中文字幕，无需 BoxJS。
+[项目首页](../README.md) · [常见问题](../README.md#常见问题) · [Quantumult X 教程](../qx/README.md)
 
-[返回项目主页](../README.md) · [反馈问题](https://github.com/qutary/youtube-bilingual-subtitles/issues)
+在 YouTube 官方 iPhone / iPad App 中使用双语字幕，通过模块参数配置，不需要 BoxJS。
 
-## 安装模块
+## 安装
 
-**模块订阅地址**
+### 1. 添加模块
+
+复制下面的地址，在 **Shadowrocket → 配置 → 模块 → ＋** 中添加并启用：
 
 ```text
 https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/shadowrocket/YouTube.Bilingual.shadowrocket.module
 ```
 
-1. 打开 **Shadowrocket → 配置 → 模块 → +**，粘贴订阅地址并启用模块。
-2. 在当前配置中开启 **HTTPS 解密（MitM）**，安装并信任 Shadowrocket CA 证书。
-3. 返回模块列表，打开 **YouTube Bilingual Subtitles · Shadowrocket → 编辑参数**。
-4. 将当前翻译平台的 API Key 占位符替换为真实 Key，保存设置。
-5. 打开 **YouTube 官方 App**，选择 **English / English (auto-generated)** 原字幕轨。
+添加后，模块列表中应出现 `YouTube Bilingual Subtitles · Shadowrocket`。菜单名称可能随应用版本略有变化。
 
-> [!TIP]
-> 已安装旧模块时，先尝试在 Shadowrocket 中更新模块。若参数界面没有更新，可以删除旧模块后重新添加以上正式订阅地址。
+### 2. 开启 HTTPS 解密（若已完成配置请跳过）
 
-## 配置说明
+在当前配置中找到 **HTTPS 解密 / MitM**，打开开关，并按应用提示生成、安装 CA 证书。
 
-默认使用 **DeepSeek**，不需要开启任何额外平台开关。最常用的参数如下：
+如果系统提示已下载描述文件，进入系统「设置」完成安装。随后打开：
 
-| 参数 | 用途 |
+**设置 → 通用 → 关于本机 → 证书信任设置**
+
+为刚安装的 Shadowrocket 证书开启完全信任。
+
+### 3. 填写 API Key
+
+点击模块，打开 **编辑参数**。默认使用 DeepSeek：
+
+| 参数 | 填写方式 |
 | --- | --- |
-| **启用翻译** | 关闭后保留原始字幕 |
-| **仅显示中文字幕** | 关闭：中英双语；开启：只显示中文 |
-| **DeepSeekKey** | 将 `PASTE_API_KEY_HERE` 替换为自己的 DeepSeek API Key |
-| **DeepSeekModel** | 默认 `deepseek-flash` |
-| **DeepSeek并发** | 默认 20，最大 64 |
-| **ResponseBudget** | 等待翻译的预算，默认 6.3 秒，可设 3–30 秒 |
+| 启用翻译 | 开启 |
+| DeepSeekKey | 把 `PASTE_API_KEY_HERE` 替换成自己的 Key |
+| DeepSeekModel | 默认 `deepseek-flash`，如账号不能调用，换成可用的模型 ID |
+| 仅显示中文字幕 | 关闭：双语；开启：仅中文 |
+| 使用火山方舟 / 使用OpenRouter / 使用自定义API | 使用 DeepSeek 时全部关闭 |
 
-### 更换翻译平台
+### 4. 开启连接，选择字幕
 
-如需使用其他翻译服务，**只开启以下一个开关**，并填写对应的 Key 和模型 ID：
+1. 返回 Shadowrocket 首页，选择合适节点，打开连接开关，确认 YouTube 可以正常播放。
+2. 进入一个带英文字幕的视频，打开 **CC / 字幕** 菜单。
+3. 选择 **English** 或 **English (auto-generated)**，等待字幕加载。
 
-| 开关 | 需要配置 |
-| --- | --- |
-| **使用火山方舟** | `火山Key`、`火山Model` |
-| **使用OpenRouter** | `OpenRouterKey`、`OpenRouterModel` |
-| **使用自定义API** | `CustomKey`、`CustomModel`、`CustomEndpoint` |
+**每次使用都需要保持 Shadowrocket 连接开启。** 流量走代理还是直连由当前配置的分流规则决定；本模块不提供节点。
 
-不要同时启用多个平台开关。模型 ID 应使用服务商实际提供的名称；`ENTER_MODEL_ID` 是占位符，不是有效模型。自定义接口须使用完整的 HTTPS Chat Completions 地址。
+## 更换翻译服务
 
-### 高级参数
+| 服务 | 开关 | 需要填写 |
+| --- | --- | --- |
+| DeepSeek | 其他平台开关全部关闭 | `DeepSeekKey`、`DeepSeekModel` |
+| 火山方舟 | 仅开启「使用火山方舟」 | `火山Key`、`火山Model` |
+| OpenRouter | 仅开启「使用OpenRouter」 | `OpenRouterKey`、`OpenRouterModel` |
 
-- **并发**：可设置 1–64；更高并发可能增大网络扩展内存压力和 API 请求费用。
-- **ResponseBudget**：3–30 秒；等待过长时 YouTube 可能提前放弃加载。
-- **BypassCache**：默认关闭。只有检查缓存或重新翻译时才建议临时开启。
-- **缓存**：与 QX 版本分开保存；再次加载视频可复用已完成的字幕片段。
+只使用一家平台，不要同时开启多个开关。`ENTER_MODEL_ID` 是占位文本，需要换成服务商提供的模型 ID。
 
-## 常见问题
+**自定义 API 尚未测试，不能确认是否可用。** 模块中保留了 `CustomKey`、`CustomModel`、`CustomEndpoint` 等字段，暂不作为安装教程的一部分。
 
-**没有中文字幕：** 检查模块是否启用、证书是否受信任、MitM 是否生效、英文字幕轨是否已选择，以及 API Key 与模型是否填写正确。
+## 高级设置
 
-**只有部分中文：** 翻译结果按响应预算返回，尚未完成的片段会保留英文。退出并重新进入视频可能复用缓存、继续补齐。
+正常使用时保留默认值即可。
 
-**提示「加载字幕时出错」：** 先使用默认的 6.3 秒预算，检查网络与翻译服务是否可用，再尝试重新进入视频。若持续失败，请在 [GitHub Issues](https://github.com/qutary/youtube-bilingual-subtitles/issues) 描述设备、系统版本、视频字幕类型和复现步骤。
+| 参数 | 默认值 / 范围 | 说明 |
+| --- | --- | --- |
+| DeepSeek并发 | 默认 20，范围 1–64 | 增大并发可能触发限流，也会增加设备负担 |
+| ResponseBudget | 默认 6.3 秒 | 本次字幕请求等待翻译的时间，不要超过 10 秒 |
+| BypassCache | 默认关闭 | 排查缓存时临时使用，可能产生重复翻译费用 |
 
-> [!IMPORTANT]
-> 本工具会对字幕相关 HTTPS 请求进行解密与改写。**待翻译的字幕文本会发送到你配置的 AI 服务**。请勿公开 API Key、包含 Key 的模块导出、完整 HAR 或未经脱敏的日志。该模块面向 YouTube iOS 原生 App，不保证在所有视频、字幕格式和客户端版本上正常工作。
+译文缓存在 Shadowrocket 内保存，与 QX 不共用。重新进入视频可以复用已完成的结果，但不保证每次都能翻译完整。
+
+字幕文本会发送到所选 AI 服务。提交反馈前请去除 Key、Authorization、Cookie 和 URL 签名参数。[反馈问题](https://github.com/qutary/youtube-bilingual-subtitles/issues/new)
