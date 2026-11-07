@@ -18,39 +18,46 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Create immutable version tags and Release pages
+      - name: Create or synchronize versioned Releases without moving tags
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
-          git fetch --tags --force
+          git fetch --tags
           shopt -s nullglob
           notes=(releases/v*.md)
           if [[ ${#notes[@]} -eq 0 ]]; then
-            echo "No version notes"; exit 0
+            echo "No version notes"
+            exit 0
           fi
+
           latest=$(printf '%s\n' "${notes[@]}" | sed -E 's#releases/(v[^/]+)\.md#\1#' | sort -V | tail -n 1)
           for file in "${notes[@]}"; do
             tag=$(basename "$file" .md)
             if [[ "$tag" == "v1.5.0" ]]; then
               target="253ed1256f52b1f77a01db29405bb03388d3c2f0"
+              title="v1.5.0 · 历史版本"
+            elif [[ "$tag" == "v1.6.0" ]]; then
+              target="3cb9f771a1fa3a8c328ec8379fdb5aaccdccfe18"
+              title="v1.6.0 · 双语字幕显示与断句优化"
             else
               target="$GITHUB_SHA"
+              title="$tag"
             fi
+
             if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
               git tag "$tag" "$target"
               git push origin "refs/tags/$tag"
             fi
-            if ! gh release view "$tag" --repo "$REPOSITORY" >/dev/null 2>&1; then
-              title="$tag"
-              if [[ "$tag" == "v1.5.0" ]]; then title="$tag · Historical stable"; fi
-              if [[ "$tag" == "v1.6.0" ]]; then title="$tag · ASR Context & Display V3"; fi
-              if [[ "$tag" == "$latest" ]]; then
-                gh release create "$tag" --repo "$REPOSITORY" --title "$title" --notes-file "$file" --latest
-              else
-                gh release create "$tag" --repo "$REPOSITORY" --title "$title" --notes-file "$file" --latest=false
-              fi
+
+            if gh release view "$tag" --repo "$REPOSITORY" >/dev/null 2>&1; then
+              # Updating notes is not a new software release. Keep the tag immutable.
+              gh release edit "$tag" --repo "$REPOSITORY" --title "$title" --notes-file "$file"
+            elif [[ "$tag" == "$latest" ]]; then
+              gh release create "$tag" --repo "$REPOSITORY" --title "$title" --notes-file "$file" --latest
+            else
+              gh release create "$tag" --repo "$REPOSITORY" --title "$title" --notes-file "$file" --latest=false
             fi
           done
