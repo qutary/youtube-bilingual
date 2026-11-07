@@ -1,4 +1,4 @@
-/* YouTube bilingual captions for Quantumult X; v1.5.0; BoxJS semantic translation with bounded response and independent-part fallback */
+/* YouTube bilingual captions for Quantumult X; v1.6.0; BoxJS semantic translation with bounded response and independent-part fallback */
 (function () {
   "use strict";
   var input = String(($response && $response.body) || "");
@@ -307,6 +307,10 @@
     return String(text).replace(/[‘’ʼ]/g,"'").replace(/[“”„]/g,'"').replace(/[‐‑‒–—]/g,"-");
   }
   function semanticFixedParts(row){
+    // V3: translate every display part with its full parent semantic context.
+    if(row.displayParts&&row.displayParts.length)return row.displayParts.map(function(p){
+      return {from:p.from,to:p.to,text:p.text};
+    });
     // All boundaries are determined locally; the provider never generates indices.
     var words=row.words||[],parts=[],from=0;
     while(from<words.length){
@@ -344,7 +348,7 @@
       if(typeof value[i]!=="string"){if(diagnostic)diagnostic.reason="fixed-part-type";return null;}
       segments.push({from:parts[i].from,to:parts[i].to,zh:value[i]});
     }
-    return normalizeNewSemantic({segments:segments},row,diagnostic,"fixed");
+    return row.displayParts?validateSemanticValue({segments:segments},row,diagnostic):normalizeNewSemantic({segments:segments},row,diagnostic,"fixed");
   }
   function normalizeNewSemantic(value,row,diagnostic,protocol){
     function reject(reason){if(diagnostic)diagnostic.reason=reason;return null;}
@@ -574,7 +578,7 @@
       return max+1;
     }
     var blockWP=newId("wp"), ws=newId("ws"), pen=newId("pen");
-    var zhSize=110,enSize=140;
+    var zhSize=110,enSize=100;
     function englishSpans(inner){
       // Preserve source text, hard breaks and per-word timing; standardize its pen.
       return inner.replace(/<s\b[^>]*>/gi,function(span){
@@ -972,6 +976,81 @@
     if(rows.some(function(r){return Math.floor(r.start+r.dur)<=Math.floor(r.start);}))return {ok:false,reason:"sub-millisecond-window"};
     return {ok:true,rows:rows,original:source.length,wordCount:words.length,estimated:estimated,exactStarts:exact};
   }
+  // DISPLAY_V2: semantic planning feeds translation context, but the screen has its
+  // own bounded windows. Estimated cuts are not verified word/audio alignment.
+  function planReadableDisplayRows(semanticRows,rollup){
+    var result=[],parentParts=[],sourceCueCuts=0,estimatedCuts=0,splitGroups=0,fallbackRows=0;
+    semanticRows.forEach(function(row){
+      var words=row.words||[],n=words.length;
+      if(!n){result.push(row);parentParts.push([]);return;}
+      var dp=new Array(n+1);dp[0]={cost:0,prev:-1};
+      for(var i=0;i<n;i++){
+        if(!dp[i])continue;
+        var chars=0;
+        for(var end=i+1;end<=n&&end<=i+19;end++){
+          chars+=words[end-1].text.length+(end>i+1?1:0);
+          var count=end-i,dur=words[end-1].end-words[i].start;
+          if(chars>82||dur>6500.01)break;
+          if(count<3&&end<n&&dur<650)continue;
+          var cost=14+Math.max(0,count-14)*1.5+
+            Math.max(0,chars-62)*0.6+Math.max(0,dur-4800)/250;
+          if(count<5&&end<n)cost+=12;
+          if(end<n){
+            var left=words[end-1].text,right=words[end].text.toLowerCase()
+              .replace(/^[\"'“”‘’(]+/,"");
+            if(semanticFunctionTail(left))cost+=52;
+            var leftWord=left.toLowerCase().replace(/[.,!?:;]+$/,"");
+            if((leftWord==="black"&&right==="hole")||
+               (leftWord==="direct"&&right==="confrontation"))cost+=90;
+            if(/^(?:direct|black|fictional|gravitational|closest|massive|atomic|nuclear|limited|possible|strong)$/.test(leftWord))cost+=20;
+            if(/^(?:well|just)$/.test(leftWord))cost+=45;
+            // Penalize incomplete modal/adverb/determiner endings.
+            if(/^(?:might|may|must|can|could|would|should|will|shall|be|been|being|am|is|are|was|were)$/.test(leftWord))cost+=46;
+            if(/^[a-z]{5,}ly$/.test(leftWord))cost+=40;
+            if(/^(?:this|that|these|those|my|your|our|their|his|her|its)$/.test(leftWord))cost+=55;
+            if(leftWord==="span"&&right==="of")cost+=80;
+            // Unpunctuated ASR often starts a new clause with a contraction.
+            if(/^(?:it's|there's|we're|they're|i'm|he's|she's)$/.test(right))cost-=22;
+            if(/[.!?。！？]$/.test(left))cost-=10;
+            else if(/[,;:，；：]$/.test(left))cost-=5;
+            if(/^(and|but|so|when|while|because|then|which|whereas|although|however|after|before)$/.test(right))cost-=5;
+            if(!rollup&&words[end-1].sourceId!==words[end].sourceId)cost-=6;
+            if(words[end].start-words[end-1].end>350)cost-=3;
+          }else cost-=3;
+          var next=dp[i].cost+cost;
+          if(!dp[end]||next<dp[end].cost)dp[end]={cost:next,prev:i};
+        }
+      }
+      if(!dp[n]){
+        // Keep an unsplittable long timed token instead of inventing a cut.
+        result.push(row);parentParts.push([{from:0,to:n-1,text:row.text}]);fallbackRows++;return;
+      }
+      var cuts=[],at=n;
+      while(at>0){
+        var from=dp[at].prev;
+        if(from<0||from>=at){cuts=[];break;}
+        cuts.push({from:from,to:at});at=from;
+      }
+      if(!cuts.length){result.push(row);parentParts.push([{from:0,to:n-1,text:row.text}]);fallbackRows++;return;}
+      cuts.reverse();
+      parentParts.push(cuts.map(function(c){return {from:c.from,to:c.to-1,
+        text:words.slice(c.from,c.to).map(function(w){return w.text;}).join(" ")};}));
+      if(cuts.length>1)splitGroups++;
+      cuts.forEach(function(c,i){
+        var part=words.slice(c.from,c.to),first=part[0],last=part[part.length-1];
+        result.push({text:part.map(function(w){return w.text;}).join(" "),
+          start:first.start,dur:last.end-first.start,words:part,
+          semanticContext:row.text});
+        if(i>0){
+          var prev=words[c.from-1];
+          if(prev.sourceId!==first.sourceId)sourceCueCuts++;
+          else estimatedCuts++;
+        }
+      });
+    });
+    return {rows:result,parentParts:parentParts,splitGroups:splitGroups,sourceCueCuts:sourceCueCuts,
+      estimatedCuts:estimatedCuts,fallbackRows:fallbackRows};
+  }
   function validateSemanticValue(value,row,diagnostic){
     function reject(reason){if(diagnostic)diagnostic.reason=reason;return null;}
     var parts;
@@ -998,6 +1077,13 @@
       clean.push({from:a,to:b,zh:zh});next=b+1;
     }
     if(next!==row.words.length)return reject("incomplete-range");
+    // Fixed part boundaries are an output contract; do not auto-merge across them.
+    if(row.displayParts&&row.displayParts.length){
+      if(clean.length!==row.displayParts.length||
+        clean.some(function(p,i){return p.from!==row.displayParts[i].from||
+          p.to!==row.displayParts[i].to;}))return reject("display-partition-mismatch");
+      return {segments:clean};
+    }
     var merged=[];
     clean.forEach(function(p){
       var prev=merged[merged.length-1];
@@ -1033,7 +1119,14 @@
     rows.forEach(function(row,i){
       var value=values[i]&&validateSemanticValue(values[i],row);
       if(value)value.segments.forEach(function(p){chunks.push({start:row.words[p.from].start,end:row.words[p.to].end,en:row.words.slice(p.from,p.to+1).map(function(w){return w.text;}).join(" "),zh:p.zh});});
-      else{
+      else if(row.displayParts&&row.displayParts.length){
+        // Missing Chinese still honors V3 display partitions, without moving source words.
+        row.displayParts.forEach(function(p){
+          var part=row.words.slice(p.from,p.to+1);
+          if(part.length)chunks.push({start:part[0].start,end:part[part.length-1].end,
+            en:part.map(function(w){return w.text;}).join(" "),zh:""});
+        });
+      }else{
         // Missing translations retain bounded source-cue-sized English pieces.
         // Do not display a long reconstructed sentence as one giant English block.
         var part=[];
@@ -1049,7 +1142,7 @@
       return open+(p.zh&&translationOnly()?'<s p="'+pen+'">'+encode(p.zh)+'</s>':
         (p.zh?'<s p="'+pen+'">'+encode(p.zh)+'&#10;</s>&#8203;':"")+'<s p="'+(pen+1)+'">'+encode(p.en)+'</s>')+'</p>';
     }).join("");
-    var styles='<wp id="'+wp+'" ap="7" ah="50" av="95"/>'+captionBackgroundStyles(ws,pen,110,140);
+    var styles='<wp id="'+wp+'" ap="7" ah="50" av="95"/>'+captionBackgroundStyles(ws,pen,110,100);
     var out=xml.replace(/(<body\b[^>]*>)[\s\S]*?<\/body>/i,function(_,open){return open+body+'</body>';});
     if(/<\/head\s*>/i.test(out))out=out.replace(/<\/head\s*>/i,styles+'</head>');else out=out.replace(/<body\b/i,'<head>'+styles+'</head><body');
     log("Semantic render: sourceUnits="+rows.length+", displayGroups="+chunks.length+", translatedUnits="+values.filter(Boolean).length);
@@ -1275,7 +1368,7 @@
     }
     function request(job,isActive){
       var ids=job.ids,textLength=ids.reduce(function(t,id){return t+rows[id].text.length;},0);
-      var simple=ids.every(function(id){return rows[id].words.length<=36;});
+      var simple=ids.every(function(id){return (!rows[id].displayParts||rows[id].displayParts.length===1)&&rows[id].words.length<=36;});
       var independentParts=(job.tries>0||longHeavy)&&!simple;
       if(independentParts&&longHeavy&&!job.tries)alignedDirectCalls++;
       var body={model:"deepseek-flash",thinking:{type:"disabled"},temperature:0.2,stream:false,
@@ -1302,7 +1395,8 @@
         var data=JSON.parse(body.messages[1].content);data.lines=ids.map(function(id){return {id:String(id),text:rows[id].text};});body.messages[1].content=JSON.stringify(data);
       }else{
         body.messages[0].content=
-          'Translate each provided English part to natural concise Simplified Chinese. '+
+          'Read ALL ordered parts of one ID as a continuous English utterance before translating. '+
+          'Return one natural Chinese string per part, aligned with only that part, without pretranslating future words. '+
           'The parts have been split and aligned by the client; DO NOT add or compute word indices. '+
           'For every supplied ID, return an array of Chinese strings in exactly the same order and number as the provided parts. '+
           'Translate every part faithfully without combining, skipping, inventing or moving content between parts or IDs. '+
@@ -1441,7 +1535,7 @@
   try {
     if(!input||!/(?:\/api\/timedtext|\/timedtext)(?:\?|$)/.test(url))return finish(input);
     var client=requestClient(url,($request&&$request.headers)||{});
-    log("v1.5.0 scope=ios-app; client="+client.kind+"; reason="+client.reason);
+    log("v1.6.0 scope=ios-app; client="+client.kind+"; reason="+client.reason);
     if(client.kind!=="ios-app"){
       log("Browser or unrecognized client bypassed; original response preserved; API/cache not used");
       return finish(input);
@@ -1454,7 +1548,7 @@
     var responseHeaders=($response && $response.headers) || {};
     var contentType=String(responseHeaders["Content-Type"] || responseHeaders["content-type"] || "unknown").split(";")[0];
     var responseStatus=Number(($response && $response.statusCode) || 0);
-    log("v1.5.0 timedtext intercepted; layout=text-break; origin status="+(responseStatus||"unknown")+
+    log("v1.6.0 timedtext intercepted; layout=text-break; origin status="+(responseStatus||"unknown")+
       "; content-type="+contentType+"; body length="+input.length);
     // An origin error or HTML response cannot be translated; preserve it without extra requests.
     if(responseStatus && (responseStatus<200 || responseStatus>=300)){
@@ -1475,12 +1569,24 @@
     // Reuse the same transcript-body hash even when the video URL's signed tokens change.
     var planStarted=Date.now();
     var semantic=semanticPlanSrv3(input);
+    if(semantic.ok){
+      var layout=planReadableDisplayRows(semantic.rows,/<p\b[^>]*\bw\s*=/.test(input));
+      var translationWindowCount=semantic.rows.length;
+      // Keep translation windows intact; display anchors are fixed parts within them.
+      semantic.rows.forEach(function(row,i){
+        if(layout.parentParts[i]&&layout.parentParts[i].length)row.displayParts=layout.parentParts[i];
+      });
+      log("DISPLAY_V3 context/display: semanticWindows="+translationWindowCount+
+        ", displayWindows="+layout.rows.length+", splitGroups="+layout.splitGroups+
+        ", cueCuts="+layout.sourceCueCuts+", estimatedCuts="+layout.estimatedCuts+
+        ", fallbackRows="+layout.fallbackRows+"; estimated cuts require device verification");
+    }
     log("Semantic planningMs="+(Date.now()-planStarted));
     var workingRows=semantic.ok?semantic.rows:src.rows;
     if(semantic.ok)log("Semantic plan: original="+semantic.original+", windows="+workingRows.length+", words="+semantic.wordCount+", wordStartMarkers="+semantic.exactStarts+", estimatedWordTimes="+semantic.estimated);
     else log("Semantic plan unavailable: "+semantic.reason+"; original cue boundaries retained");
     configureResponseBudget(workingRows);
-    var semanticHash=semantic.ok?hash("SEM_V1|"+input+"|"+workingRows.map(function(r){return r.text+"@"+r.start+"+"+r.dur;}).join("\n")):"";
+    var semanticHash=semantic.ok?hash("SEM_V4_CONTEXT1|"+input+"|"+workingRows.map(function(r){return r.text+"@"+r.start+"+"+r.dur;}).join("\n")):"";
     var promise=semantic.ok?deepSeekSemantic(workingRows,key,semanticHash):deepSeekProgressive(src.rows,key,hash(input));
     promise.then(function(lines){
       if(!lines||!lines.some(Boolean)){
