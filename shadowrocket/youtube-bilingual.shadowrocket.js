@@ -1,4 +1,4 @@
-/* YouTube Bilingual v2.0.0 — native SR + BoxJS */
+/* YouTube Bilingual v2.1.0 — native SR + BoxJS */
 (function(){
 /* Native SR boundary for the unchanged QX caption/UI processing cores. */
 function ytSRBridge(mode,main){
@@ -59,7 +59,7 @@ function ytSRBridge(mode,main){
   var normalized=Object.assign({},response);
   if(mode==="binary"){
     var input=bytes(response.bodyBytes!==undefined?response.bodyBytes:response.body);
-    if(!input){console.log("[YTB SR v2.0.0] unsupported binary response; original preserved");done({});return;}
+    if(!input){console.log("[YTB SR v2.1.0] unsupported binary response; original preserved");done({});return;}
     normalized.bodyBytes=input.buffer.slice(input.byteOffset,input.byteOffset+input.byteLength);
     delete normalized.body;
   }else if(typeof response.body!=="string"){
@@ -72,14 +72,14 @@ function ytSRBridge(mode,main){
     try{if(typeof $notification!=="undefined"&&$notification&&typeof $notification.post==="function")
       $notification.post(title,subtitle,message);}catch(_){}
   }
-  console.log("[YTB SR v2.0.0] mode="+mode+"; settings=BoxJS");
+  console.log("[YTB SR v2.1.0] mode="+mode+"; settings=BoxJS");
   try{main(normalizedRequest,normalized,done,prefs,{fetch:fetch},notify,undefined);}
-  catch(_){console.log("[YTB SR v2.0.0] safe fallback; original preserved");done({});}
+  catch(_){console.log("[YTB SR v2.1.0] safe fallback; original preserved");done({});}
 }
 if(typeof module!=="undefined"&&module.exports)module.exports=ytSRBridge;
 
 ytSRBridge("text",function($request,$response,$done,$prefs,$task,$notify,$argument){
-/* YouTube bilingual captions for Quantumult X; v2.0.0 THIRTEEN LANGUAGES; BoxJS semantic translation with bounded response and independent-part fallback */
+/* YouTube bilingual captions for Quantumult X; v2.1.0 THIRTEEN LANGUAGES; BoxJS semantic translation with bounded response and independent-part fallback */
 (function () {
   "use strict";
   var input = String(($response && $response.body) || "");
@@ -219,8 +219,6 @@ if(typeof module!=="undefined"&&module.exports)module.exports=ytCacheControl;
     var longAlignedReliable=betaBoolean("LONG_ALIGNED_RELIABLE",true);
     var longStartFour=betaBoolean("LONG_START_FOUR",true);
     var volcLongFastStart=betaBoolean("VOLCENGINE_LONG_FAST_START",true);
-    var routerReasoning=String(betaPref("OPENROUTER_REASONING","auto")).trim().toLowerCase();
-    if(!/^(?:auto|none|low|medium)$/.test(routerReasoning))routerReasoning="auto";
     var routerFastStart=betaBoolean("OPENROUTER_FAST_START",true);
     var routerSort=String(betaPref("OPENROUTER_SORT","auto")).trim().toLowerCase();
     if(routerSort!=="auto"&&routerSort!=="latency"&&routerSort!=="throughput")routerSort="auto";
@@ -231,7 +229,7 @@ if(typeof module!=="undefined"&&module.exports)module.exports=ytCacheControl;
       cacheScope:JSON.stringify(["SR_LANGPAIR_V5",provider,endpoint,model,jsonMode,epoch,targetLang]),
       responseBudget:String(betaPref("RESPONSE_BUDGET","balanced")).trim().toLowerCase(),
        customConcurrency:customConcurrency,deepConcurrency:deepConcurrency,volcConcurrency:volcConcurrency,routerConcurrency:routerConcurrency,
-       volcFast:betaBoolean("VOLCENGINE_FAST",false),volcCompact:volcCompact,routerCompact:routerCompact,longAdaptive:longAdaptive,longAlignedReliable:longAlignedReliable,longStartFour:longStartFour,volcLongFastStart:volcLongFastStart,routerReasoning:routerReasoning,routerFastStart:routerFastStart,routerSort:routerSort};
+       volcFast:betaBoolean("VOLCENGINE_FAST",false),volcCompact:volcCompact,routerCompact:routerCompact,longAdaptive:longAdaptive,longAlignedReliable:longAlignedReliable,longStartFour:longStartFour,volcLongFastStart:volcLongFastStart,routerFastStart:routerFastStart,routerSort:routerSort};
   }
   function translationOnly(){return runtimeConfig&&runtimeConfig.display==="translation";}
   function translationBelow(){return runtimeConfig&&runtimeConfig.display==="source_first";}
@@ -245,6 +243,170 @@ if(typeof module!=="undefined"&&module.exports)module.exports=ytCacheControl;
   }
   function cacheBypassed(){return !ytCacheSession.current()||!!(runtimeConfig&&runtimeConfig.bypassCache);}
   function scopedSourceHash(id){return hash((runtimeConfig?runtimeConfig.cacheScope:"SHADOWROCKET_V1")+"|"+id);}
+/* Automatic reasoning compatibility for captions/UI, QX/native SR. */
+function ytModelPolicy(env){
+  var CACHE_STORE="QXYTB_MODEL_CAPS_V2",MAX=24,TTL=2*3600000,LEARNED_TTL=10*60000;
+  var pending=Object.create(null),memory=null,noted=Object.create(null);
+  function safe(fn,fallback){try{return fn();}catch(_){return fallback;}}
+  function current(){return !env.current||safe(env.current,false);}
+  function generation(){return env.generation?String(safe(env.generation,"0")):"0";}
+  function status(r){return Number(r&&(r.statusCode||r.status||0));}
+  function log(s){if(noted[s])return;noted[s]=true;if(env.log)safe(function(){env.log("Translation compatibility: "+s);});}
+  function scope(c){var s=JSON.stringify([c.provider,c.endpoint||c.url,c.model]),a=2166136261,b=2779096485;for(var i=0;i<s.length;i++){a=Math.imul(a^s.charCodeAt(i),16777619);b=Math.imul(b^(s.charCodeAt(i)+i),2246822519);}return (a>>>0).toString(36)+"."+(b>>>0).toString(36);}
+  function clean(c){
+    if(!c||typeof c!=="object")return null;
+    var levels=["none","minimal","low","medium","high","xhigh","max"];
+    return {mandatory:c.mandatory===true,efforts:Array.isArray(c.efforts)?c.efforts.filter(function(v){return levels.indexOf(v)!==-1;}).slice(0,7):null,
+      reasoning:typeof c.reasoning==="boolean"?c.reasoning:null,temp:typeof c.temp==="boolean"?c.temp:null};
+  }
+  function cache(){
+    if(memory)return memory;memory=Object.create(null);
+    var raw=env.read?safe(function(){return env.read(CACHE_STORE);},""):"";
+    if(typeof raw!=="string"||raw.length>24000)return memory;
+    try{var root=JSON.parse(raw);if(root.v!==1||root.g!==generation()||!Array.isArray(root.rows))return memory;
+      root.rows.slice(0,MAX).forEach(function(row){var cap=clean(row[2]);if(typeof row[0]==="string"&&row[0].length<80&&typeof row[1]==="number"&&row[1]>Date.now()&&row[1]<Date.now()+TTL+60000&&cap)memory[row[0]]={expires:row[1],cap:cap};});
+    }catch(_){}return memory;
+  }
+  function get(c){var row=cache()[scope(c)];return row&&row.expires>Date.now()?row.cap:null;}
+  function put(c,cap,ttl){
+    if(!current()||!cap)return;
+    var map=cache();map[scope(c)]={expires:Date.now()+ttl,cap:clean(cap)};
+    var rows=Object.keys(map).filter(function(k){return map[k].expires>Date.now();}).map(function(k){return [k,map[k].expires,map[k].cap];});
+    rows.sort(function(a,b){return b[1]-a[1];});rows=rows.slice(0,MAX);
+    if(env.write)safe(function(){env.write(JSON.stringify({v:1,g:generation(),rows:rows}),CACHE_STORE);});
+  }
+  function parseModel(resp,c){
+    if(status(resp)<200||status(resp)>=300||typeof resp.body!=="string"||resp.body.length>256000)return null;
+    try{var parsed=JSON.parse(resp.body),model=parsed.data||parsed;if(!model||typeof model.id!=="string")return null;
+      var base=c.model.replace(/:(?:nitro|floor)$/i,"");if(model.id!==c.model&&model.id!==base)return null;
+      var r=model.reasoning&&typeof model.reasoning==="object"?model.reasoning:model.effort?{supported_efforts:model.effort.supported_levels,mandatory:model.thinking&&model.thinking.mandatory===true}:null,p=Array.isArray(model.supported_parameters)?model.supported_parameters:null;
+      var dynamic=/^openrouter\/(?:auto|free)$/.test(c.model);
+      return clean({mandatory:r&&r.mandatory===true,efforts:r&&r.supported_efforts,
+        reasoning:r?true:dynamic?null:p?p.indexOf("reasoning")!==-1||p.indexOf("reasoning_effort")!==-1:null,
+        temp:p?p.indexOf("temperature")!==-1:null});
+    }catch(_){return null;}
+  }
+  function lifecycle(options){
+    options=options||{};return {active:options.active||env.active||function(){return true;},remaining:options.remaining||env.remaining||function(){return 8000;}};
+  }
+  function available(life,reserve){return current()&&safe(life.active,false)&&Number(safe(life.remaining,0))>reserve;}
+  function capabilities(c,life,required){
+    var cached=get(c);if(cached)return Promise.resolve(cached);
+    if((c.provider==="deepseek"||c.provider==="volcengine")&&!required)return Promise.resolve(null);
+    var id=scope(c);if(pending[id])return pending[id];
+    var endpoint=c.endpoint||c.url;
+    if(!/\/chat\/completions$/.test(endpoint)||!available(life,300))return Promise.resolve(null);
+    var modelPath=c.model.split("/").map(encodeURIComponent).join("/");
+    var url=endpoint.replace(/\/chat\/completions$/,c.provider==="openrouter"?"/model/":"/models/")+modelPath;
+    var wait=Math.min(1200,Math.max(1,Number(safe(life.remaining,0))-250));
+    var promise=new Promise(function(resolve){
+      var settled=false,timer=null;
+      function finish(cap){if(settled)return;settled=true;if(timer!==null)clearTimeout(timer);if(cap&&available(life,0))put(c,cap,TTL);resolve(cap);}
+      timer=setTimeout(function(){finish(null);},wait);
+      Promise.resolve().then(function(){return env.fetch({url:url,method:"GET",headers:{Accept:"application/json"},timeout:wait/1000,opts:{redirection:false}});})
+        .then(function(resp){finish(parseModel(resp,c));},function(){finish(null);});
+    });
+    pending[id]=promise;return promise.then(function(cap){delete pending[id];return cap;});
+  }
+  function minimum(cap){
+    var order=["minimal","low","medium","high","xhigh","max"];
+    if(!cap||!Array.isArray(cap.efforts))return null;
+    for(var i=0;i<order.length;i++)if(cap.efforts.indexOf(order[i])!==-1)return order[i];
+    return null;
+  }
+  function select(c,cap){
+    if(cap&&cap.reasoning===false&&!cap.mandatory)return {effort:null,on:false,source:"non-reasoning"};
+    if(cap&&cap.mandatory)return {effort:minimum(cap),on:true,source:"required"};
+    return {effort:"none",on:false,source:cap?"off":"off-first"};
+  }
+  function dialect(c){return c.provider==="deepseek"||c.provider==="volcengine"?"thinking":c.provider==="openrouter"?"nested":"effort";}
+  function parameters(body,c,cap,choice){
+    var out=Object.assign({},body),style=dialect(c);delete out.thinking;delete out.reasoning;delete out.reasoning_effort;
+    if(choice.source!=="non-reasoning"){
+      if(style==="thinking"){
+        out.thinking={type:choice.on?"enabled":"disabled"};
+        if(choice.on&&choice.effort)out.reasoning_effort=choice.effort;
+      }else if(style==="nested"){
+        if(choice.effort)out.reasoning={effort:choice.effort};
+      }else if(choice.effort)out.reasoning_effort=choice.effort;
+    }
+    if(choice.on||((c.provider==="openrouter"||c.provider==="custom")&&(!cap||cap.temp!==true)))delete out.temperature;
+    if(c.provider==="openrouter"){
+      if(c.routerSort&&c.routerSort!=="auto")out.provider={sort:c.routerSort};else delete out.provider;
+    }
+    return out;
+  }
+  function declaredEfforts(resp){
+    try{var e=JSON.parse(resp.body).error||{},m=e.metadata||{},raw=e.supported_efforts||e.allowed_values||m.supported_efforts||m.allowed_values;
+      if(!Array.isArray(raw)){
+        var text=String(e.message||""),tail=text.match(/(?:supported|allowed|valid) (?:values|efforts|levels)[^a-z]*(?:are[^a-z]*)?([\s\S]{1,300})/i);
+        raw=tail?tail[1].match(/\b(?:none|minimal|low|medium|high|xhigh|max)\b/gi):null;
+      }
+      return Array.isArray(raw)?clean({efforts:raw.map(function(v){return String(v).toLowerCase();})}).efforts:null;
+    }catch(_){return null;}
+  }
+  function errorKind(resp){
+    if(status(resp)!==400||typeof resp.body!=="string"||resp.body.length>64000)return "";
+    try{var obj=JSON.parse(resp.body),e=obj.error,msg=e&&typeof e.message==="string"?e.message:"";
+      if(/(?:reasoning|thinking).{0,100}(?:mandatory|required|cannot be disabled|must be enabled)/i.test(msg))return "mandatory";
+      if(/reasoning|thinking/i.test(msg)&&/\b(?:disabled|none)\b/i.test(msg)&&/not supported|not allowed|invalid/i.test(msg))return "mandatory";
+      var declared=declaredEfforts(resp);
+      if(/reasoning|thinking/i.test(msg)&&declared&&declared.length&&declared.indexOf("none")===-1)return "mandatory";
+      if(/(?:reasoning|thinking).{0,70}(?:not supported|unsupported)|(?:unsupported|not supported).{0,70}(?:reasoning|thinking)/i.test(msg))return "unsupported";
+      if(/temperature/i.test(msg)&&/not supported|unsupported|only.{0,30}default/i.test(msg))return "temperature";
+    }catch(_){}return "";
+  }
+  function send(c,body,options){
+    var life=lifecycle(options);
+    function post(request){
+      if(!available(life,0))return Promise.reject(Error("Translation response deadline"));
+      return env.fetch({url:c.endpoint||c.url,method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+c.key},
+        body:JSON.stringify(request),timeout:Math.max(0.1,Math.min(8,Number(safe(life.remaining,0))/1000)),opts:{redirection:false}});
+    }
+    return capabilities(c,life).then(function(cap){
+      // Another concurrent batch may have learned a stricter requirement.
+      cap=get(c)||cap;var choice=select(c,cap),request=parameters(body,c,cap,choice);
+      if(choice.on&&!choice.effort){log("minimum-effort-unknown; original-preserved");return Promise.resolve({statusCode:400,body:JSON.stringify({error:{message:"Required reasoning effort is unknown; original text preserved."}})});}
+      log("mode="+choice.source+"; effort="+(choice.effort||"model-default"));
+      return Promise.resolve().then(function(){return post(request);}).then(function(resp){
+        var http=status(resp);
+        if(http>=400)log("HTTP="+http+"; category="+({401:"authentication",402:"credits-or-key-limit",403:"access-restriction",429:"rate-limit"}[http]||"request-rejected"));
+        var kind=errorKind(resp),learned=cap?clean(cap):{mandatory:false,efforts:null,reasoning:null,temp:null};
+        if(!kind||!available(life,250))return resp;
+        function retryWith(next){
+          var selected=select(c,next);
+          if(selected.on&&!selected.effort){log("minimum-effort-unknown; original-preserved");return resp;}
+          var retry=parameters(body,c,next,selected);
+          if(JSON.stringify(retry)===JSON.stringify(request))return resp;
+          put(c,next,LEARNED_TTL);log("single-retry="+kind);return post(retry);
+        }
+        if(kind==="mandatory"){
+          if(choice.on)return resp;
+          return capabilities(c,life,true).then(function(fresh){
+            learned=fresh||learned;learned.mandatory=true;learned.reasoning=true;
+            var declared=declaredEfforts(resp);if(declared&&declared.length)learned.efforts=declared;
+            return retryWith(learned);
+          });
+        }
+        if(kind==="unsupported"){
+          if(learned.mandatory||!(request.reasoning||request.reasoning_effort||request.thinking))return resp;
+          learned.reasoning=false;
+        }else{
+          if(!Object.prototype.hasOwnProperty.call(request,"temperature"))return resp;learned.temp=false;
+        }
+        return retryWith(learned);
+      });
+    });
+  }
+  return {send:send};
+}
+if(typeof module!=="undefined"&&module.exports)module.exports=ytModelPolicy;
+
+  var ytCaptionModelClient=ytModelPolicy({
+    fetch:function(req){return $task.fetch(req);},read:function(k){return $prefs.valueForKey(k);},
+    write:function(v,k){return $prefs.setValueForKey(v,k);},current:function(){return ytCacheSession.current();},
+    generation:function(){return ytCacheSession.generation;},active:function(){return !finished;},remaining:remainingResponseWait,log:log
+  });
   var apiCallId=0,apiInFlight=0,routerUsageAvailable=0,routerUsageMissing=0,routerReasoningTokens=0,routerCompletionTokens=0;
   function configuredConcurrency(fallback){
     if(!runtimeConfig)return fallback;
@@ -293,27 +455,11 @@ if(typeof module!=="undefined"&&module.exports)module.exports=ytCacheControl;
     else delete body.service_tier;
     if(config.provider==="openrouter"&&config.routerSort!=="auto")body.provider={sort:config.routerSort};
     else delete body.provider;
-    // GPT-6 Luna defaults to medium reasoning on the provider, which adds
-    // invisible reasoning tokens even for a plain subtitle translation task.
-    // Keep all other OpenRouter models' defaults unchanged unless opted in.
-    if(config.provider==="openrouter"){
-      var effort=config.routerReasoning;
-      if(effort==="auto"&&/^openai\/gpt-6-luna(?:-[0-9]{8})?(?::nitro)?$/i.test(config.model))effort="none";
-      if(effort!=="auto"){
-        body.reasoning={effort:effort};
-        // GPT-6 with reasoning != none does not support temperature.
-        if(effort!=="none")delete body.temperature;
-      }else delete body.reasoning;
-      if(id===1)log("OpenRouter request options: reasoningEffort="+effort+
-        ", route="+config.routerSort+", fastStart="+config.routerFastStart+
-        ", model="+config.model);
-    }else delete body.reasoning;
+    if(config.provider!=="openrouter")delete body.reasoning;
     apiInFlight++;
     var activeAtStart=apiInFlight,request;
     try{
-      request=$task.fetch({url:config.endpoint,method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":"Bearer "+config.key},
-        body:JSON.stringify(body),opts:{redirection:false}});
+      request=ytCaptionModelClient.send(config,body);
     }catch(error){
       apiInFlight--;
       var category=safeErrorType(error);

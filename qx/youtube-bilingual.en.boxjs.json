@@ -1,6 +1,6 @@
 {
   "id": "qutary.youtube-bilingual.shared.en",
-  "name": "YouTube Bilingual v2.0.0 (English)",
+  "name": "YouTube Bilingual v2.1.0 (English)",
   "author": "@qutary",
   "description": "Shared settings for Quantumult X and Shadowrocket",
   "repo": "https://github.com/qutary/youtube-bilingual",
@@ -284,7 +284,7 @@
           "name": "Translate interface text",
           "type": "boolean",
           "val": true,
-          "desc": "Turning this off keeps captions and ad filtering active.",
+          "desc": "Turning off keeps captions and ad filtering active. Channel names, view counts and dates stay unchanged.",
           "persistent-hint": true,
           "hide-details": false
         },
@@ -550,7 +550,6 @@
         "QXYTB_BETA_OPENROUTER_MODEL",
         "QXYTB_BETA_OPENROUTER_CONCURRENCY",
         "QXYTB_BETA_OPENROUTER_ENDPOINT",
-        "QXYTB_BETA_OPENROUTER_REASONING",
         "QXYTB_BETA_OPENROUTER_SORT",
         "QXYTB_BETA_OPENROUTER_COMPACT_BATCH",
         "QXYTB_BETA_OPENROUTER_FAST_START"
@@ -592,30 +591,6 @@
           "desc": "Keep the default, or enter a full HTTPS endpoint.",
           "persistent-hint": true,
           "hide-details": false
-        },
-        {
-          "id": "QXYTB_BETA_OPENROUTER_REASONING",
-          "name": "Reasoning effort",
-          "type": "selects",
-          "val": "auto",
-          "items": [
-            {
-              "key": "auto",
-              "label": "Auto (GPT-6 Luna: off; others: default)"
-            },
-            {
-              "key": "none",
-              "label": "None (lowest latency)"
-            },
-            {
-              "key": "low",
-              "label": "Low"
-            },
-            {
-              "key": "medium",
-              "label": "Medium"
-            }
-          ]
         },
         {
           "id": "QXYTB_BETA_OPENROUTER_SORT",
