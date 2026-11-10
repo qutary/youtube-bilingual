@@ -3,13 +3,13 @@
   "name": "YouTube Bilingual v2.0.0",
   "author": "@qutary",
   "description": "QX / Shadowrocket 共用设置",
-  "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+  "repo": "https://github.com/qutary/youtube-bilingual",
   "apps": [
     {
       "id": "qutary.youtube-bilingual.langpair-v5.common",
       "name": "🎬 字幕设置",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_ENABLED",
         "QXYTB_BETA_DISPLAY",
@@ -415,13 +415,13 @@
         "QXYTB_BETA_CLEAR_ALL_CACHE"
       ],
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles"
+      "repo": "https://github.com/qutary/youtube-bilingual"
     },
     {
       "id": "qutary.youtube-bilingual.langpair-v5.deepseek",
       "name": "🔷 DeepSeek · 服务配置",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_DEEPSEEK_KEY",
         "QXYTB_BETA_DEEPSEEK_MODEL",
@@ -472,7 +472,7 @@
       "id": "qutary.youtube-bilingual.langpair-v5.volcengine",
       "name": "🌋 火山方舟 · 服务配置",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_VOLCENGINE_KEY",
         "QXYTB_BETA_VOLCENGINE_MODEL",
@@ -544,7 +544,7 @@
       "id": "qutary.youtube-bilingual.langpair-v5.openrouter",
       "name": "🌐 OpenRouter · 服务配置",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_OPENROUTER_KEY",
         "QXYTB_BETA_OPENROUTER_MODEL",
@@ -655,7 +655,7 @@
       "id": "qutary.youtube-bilingual.langpair-v5.custom",
       "name": "🔌 自定义 API · 服务配置",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_CUSTOM_KEY",
         "QXYTB_BETA_CUSTOM_MODEL",

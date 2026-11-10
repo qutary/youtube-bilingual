@@ -3,13 +3,13 @@
   "name": "YouTube Bilingual v2.0.0 (English)",
   "author": "@qutary",
   "description": "Shared settings for Quantumult X and Shadowrocket",
-  "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+  "repo": "https://github.com/qutary/youtube-bilingual",
   "apps": [
     {
       "id": "qutary.youtube-bilingual.langpair-v5.common.en",
       "name": "🎬 Caption settings",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_ENABLED",
         "QXYTB_BETA_DISPLAY",
@@ -415,13 +415,13 @@
         "QXYTB_BETA_CLEAR_ALL_CACHE"
       ],
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles"
+      "repo": "https://github.com/qutary/youtube-bilingual"
     },
     {
       "id": "qutary.youtube-bilingual.langpair-v5.deepseek.en",
       "name": "🔷 DeepSeek",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_DEEPSEEK_KEY",
         "QXYTB_BETA_DEEPSEEK_MODEL",
@@ -472,7 +472,7 @@
       "id": "qutary.youtube-bilingual.langpair-v5.volcengine.en",
       "name": "🌋 Volcengine Ark",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_VOLCENGINE_KEY",
         "QXYTB_BETA_VOLCENGINE_MODEL",
@@ -544,7 +544,7 @@
       "id": "qutary.youtube-bilingual.langpair-v5.openrouter.en",
       "name": "🌐 OpenRouter",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_OPENROUTER_KEY",
         "QXYTB_BETA_OPENROUTER_MODEL",
@@ -655,7 +655,7 @@
       "id": "qutary.youtube-bilingual.langpair-v5.custom.en",
       "name": "🔌 Custom API",
       "author": "@qutary",
-      "repo": "https://github.com/qutary/youtube-bilingual-subtitles",
+      "repo": "https://github.com/qutary/youtube-bilingual",
       "keys": [
         "QXYTB_BETA_CUSTOM_KEY",
         "QXYTB_BETA_CUSTOM_MODEL",

@@ -1,6 +1,6 @@
 <div align="center">
 
-# YouTube Bilingual Subtitles
+# YouTube Bilingual
 
 **Read YouTube captions, titles and comments in a language you understand.**
 
@@ -10,7 +10,7 @@ Official YouTube app on iPhone / iPad · Quantumult X / Shadowrocket · Your own
 
 </div>
 
-> Current stable release: **v2.0.0** (2026-11-10). [Release notes](releases/v2.0.0.md) · [Previous versions](https://github.com/qutary/youtube-bilingual-subtitles/releases).
+> Current stable release: **v2.0.0** (2026-11-10). [Release notes](releases/v2.0.0.md) · [Previous versions](https://github.com/qutary/youtube-bilingual/releases).
 
 ## What it does
 
@@ -55,13 +55,13 @@ Use the resource for your active proxy app. Disable older or duplicate YouTube c
 **Quantumult X**: add and enable this URL as a remote rewrite resource.
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/YouTube.Bilingual.snippet
+https://raw.githubusercontent.com/qutary/youtube-bilingual/main/qx/YouTube.Bilingual.snippet
 ```
 
 **Shadowrocket**: add and enable this URL as a module. Translation settings are managed in BoxJS.
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/shadowrocket/YouTube.Bilingual.shadowrocket.module
+https://raw.githubusercontent.com/qutary/youtube-bilingual/main/shadowrocket/YouTube.Bilingual.shadowrocket.module
 ```
 
 **Keep the proxy connection, module/rewrite and HTTPS decryption (MitM) enabled, with the corresponding certificate installed and trusted.** Importing a URL alone does not complete these steps.
@@ -100,13 +100,13 @@ In BoxJS **Subscriptions**, add **either the Chinese or English edition**. The s
 **Chinese settings**
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/youtube-bilingual.boxjs.json
+https://raw.githubusercontent.com/qutary/youtube-bilingual/main/qx/youtube-bilingual.boxjs.json
 ```
 
 **English settings**
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/youtube-bilingual.en.boxjs.json
+https://raw.githubusercontent.com/qutary/youtube-bilingual/main/qx/youtube-bilingual.en.boxjs.json
 ```
 
 The edition changes settings labels, not the translation target. **QX and Shadowrocket store data separately; API keys and other settings do not automatically sync between them.**
@@ -167,7 +167,7 @@ Clearing the cache does not refresh pages or captions already loaded by YouTube.
 
 Older Shadowrocket module arguments are not imported into BoxJS automatically. When switching for the first time, save your original key, model and other settings in Shadowrocket's BoxJS. Existing values in that app's BoxJS can be reused. Changing between Chinese and English settings does not require entering your key again.
 
-Use [Releases](https://github.com/qutary/youtube-bilingual-subtitles/releases) for stable versions and historical rollback instructions. Disable the current rules before rolling back.
+Use [Releases](https://github.com/qutary/youtube-bilingual/releases) for stable versions and historical rollback instructions. Disable the current rules before rolling back.
 
 <a id="faq"></a>
 
@@ -191,7 +191,7 @@ Interface translation relies on text fields in YouTube requests. Different clien
 
 Caption text and enabled categories of interface text are sent to your chosen API provider. Comments, posts and history titles may contain personal information, so enable categories as needed. Translations are cached locally and can be cleared in BoxJS.
 
-To [report an issue](https://github.com/qutary/youtube-bilingual-subtitles/issues/new), include your device and OS, YouTube/proxy versions, provider and model, video or page URL, and reproduction steps. Remove **API keys, Cookie, Authorization, signed URL parameters and personal identifiers** before sharing logs.
+To [report an issue](https://github.com/qutary/youtube-bilingual/issues/new), include your device and OS, YouTube/proxy versions, provider and model, video or page URL, and reproduction steps. Remove **API keys, Cookie, Authorization, signed URL parameters and personal identifiers** before sharing logs.
 
 ## Credits
 

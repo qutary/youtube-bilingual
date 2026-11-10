@@ -1,6 +1,6 @@
 <div align="center">
 
-# YouTube Bilingual Subtitles
+# YouTube Bilingual
 
 **让 YouTube 的字幕、标题和评论，都能用你熟悉的语言阅读。**
 
@@ -10,7 +10,7 @@
 
 </div>
 
-> 当前正式版：**v2.0.0**（2026-11-10）。[更新说明](releases/v2.0.0.md) · [历史版本](https://github.com/qutary/youtube-bilingual-subtitles/releases)。
+> 当前正式版：**v2.0.0**（2026-11-10）。[更新说明](releases/v2.0.0.md) · [历史版本](https://github.com/qutary/youtube-bilingual/releases)。
 
 ## 可以做什么
 
@@ -55,13 +55,13 @@
 **Quantumult X**：将下面地址添加为「重写 → 引用」，并启用。
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/YouTube.Bilingual.snippet
+https://raw.githubusercontent.com/qutary/youtube-bilingual/main/qx/YouTube.Bilingual.snippet
 ```
 
 **Shadowrocket**：将下面地址添加为模块，并启用。翻译参数统一在 BoxJS 设置。
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/shadowrocket/YouTube.Bilingual.shadowrocket.module
+https://raw.githubusercontent.com/qutary/youtube-bilingual/main/shadowrocket/YouTube.Bilingual.shadowrocket.module
 ```
 
 **保持代理连接、模块／重写和 HTTPS 解密（MitM）开启，并确认对应证书已安装、已信任。** 仅导入链接不会自动完成这些设置。
@@ -100,13 +100,13 @@ http://boxjs.com
 **中文设置**
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/youtube-bilingual.boxjs.json
+https://raw.githubusercontent.com/qutary/youtube-bilingual/main/qx/youtube-bilingual.boxjs.json
 ```
 
 **English settings**
 
 ```text
-https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/youtube-bilingual.en.boxjs.json
+https://raw.githubusercontent.com/qutary/youtube-bilingual/main/qx/youtube-bilingual.en.boxjs.json
 ```
 
 中英文只改变设置页文字，不改变翻译目标语言。**QX 与 Shadowrocket 分别保存数据，Key 和其他设置不会跨应用自动同步。**
@@ -167,7 +167,7 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/you
 
 旧版 Shadowrocket 的模块参数不会自动迁入 BoxJS，首次切换需在 Shadowrocket 的 BoxJS 保存原 Key、模型等设置；已保存在本应用 BoxJS 中的值可继续使用。更换中英文设置订阅也不需要重填 Key。
 
-正式版和历史回退入口以 [Releases](https://github.com/qutary/youtube-bilingual-subtitles/releases)为准；回退时先停用当前规则。
+正式版和历史回退入口以 [Releases](https://github.com/qutary/youtube-bilingual/releases)为准；回退时先停用当前规则。
 
 <a id="faq"></a>
 
@@ -191,7 +191,7 @@ https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/main/qx/you
 
 需要翻译的字幕与已开启类别的界面文字会发送给你选择的 API 服务商；评论、帖子和历史标题也可能包含个人信息，请按需启用。本地会保存译文缓存，可在 BoxJS 清理。
 
-遇到问题可[提交反馈](https://github.com/qutary/youtube-bilingual-subtitles/issues/new)。请附设备与系统、YouTube／代理工具版本、服务商和模型、视频或页面链接、复现步骤；分享前去除 **API Key、Cookie、Authorization、签名参数和个人标识**。
+遇到问题可[提交反馈](https://github.com/qutary/youtube-bilingual/issues/new)。请附设备与系统、YouTube／代理工具版本、服务商和模型、视频或页面链接、复现步骤；分享前去除 **API Key、Cookie、Authorization、签名参数和个人标识**。
 
 ## 致谢
 
