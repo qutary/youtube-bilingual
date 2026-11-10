@@ -2,8 +2,6 @@
 
 # YouTube Bilingual
 
-**让 YouTube 的字幕、标题和评论，都能用你熟悉的语言阅读。**
-
 适用于 iPhone / iPad 上的 YouTube 官方 App · Quantumult X / Shadowrocket · 自备 AI API
 
 [English](README.en.md) · [开始安装](#install) · [翻译设置](#settings) · [常见问题](#faq)
@@ -12,7 +10,7 @@
 
 > 当前正式版：**v2.1.0**（2026-11-10）。[更新说明](releases/v2.1.0.md) · [历史版本](https://github.com/qutary/youtube-bilingual/releases)。
 
-## 可以做什么
+## 功能
 
 - **双语字幕**：译文在上、原文在上、仅译文，三种方式按需切换。
 - **界面翻译**：翻译已适配的标题、简介、推荐、评论与回复、频道、帖子、播放列表、历史记录及部分 Shorts 文字。
