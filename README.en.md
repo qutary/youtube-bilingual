@@ -2,8 +2,6 @@
 
 # YouTube Bilingual
 
-**Read YouTube captions, titles and comments in a language you understand.**
-
 Official YouTube app on iPhone / iPad · Quantumult X / Shadowrocket · Your own AI API
 
 [简体中文](README.md) · [Get started](#install) · [Translation settings](#settings) · [FAQ](#faq)
