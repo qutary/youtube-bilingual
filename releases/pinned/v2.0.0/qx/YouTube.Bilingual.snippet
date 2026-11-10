@@ -1,0 +1,18 @@
+#!name=YouTube Bilingual v2.0.0 (QX)
+#!desc=十三语言字幕与界面翻译；支持四类 API；通过 BoxJS 设置。
+#!author=qutary · derived from ddgksf2013 / Maasea
+#!homepage=https://github.com/qutary/youtube-bilingual-subtitles
+
+hostname = -redirector*.googlevideo.com,*.googlevideo.com,www.youtube.com,m.youtube.com,music.youtube.com,video.google.com,s.youtube.com,youtubei.googleapis.com
+
+(^https?:\/\/[\w-]+\.googlevideo\.com\/(?!dclk_video_ads).+?)&ctier=L(&.+?),ctier,(.+) url 302 $1$2$3
+^https?:\/\/[\w-]+\.googlevideo\.com\/(?!(dclk_video_ads|videoplayback\?)).+&oad url reject-200
+
+^https?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|reel\/reel_item_watch|guide|account\/get_setting|get_watch) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/0fb4aec8905e526bcfe4b7f77be94a10dacd1c8c/qx/youtube-ui-adblock.js
+
+^https?:\/\/(www|s)\.youtube\.com\/api\/stats\/ads url reject-200
+^https?:\/\/(www|s)\.youtube\.com\/(pagead|ptracking) url reject-200
+^https?:\/\/s\.youtube\.com\/api\/stats\/qoe\?adcontext url reject-200
+
+^https:\/\/(?:www|m|music)\.youtube\.com\/api\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/0fb4aec8905e526bcfe4b7f77be94a10dacd1c8c/qx/youtube-bilingual.js
+^https:\/\/video\.google\.com\/timedtext(?:\?|$) url script-response-body https://raw.githubusercontent.com/qutary/youtube-bilingual-subtitles/0fb4aec8905e526bcfe4b7f77be94a10dacd1c8c/qx/youtube-bilingual.js
