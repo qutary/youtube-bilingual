@@ -1,0 +1,681 @@
+{
+  "id": "qutary.youtube-bilingual.shared",
+  "name": "YouTube Bilingual v2.1.0",
+  "author": "@qutary",
+  "description": "QX / Shadowrocket 共用设置",
+  "repo": "https://github.com/qutary/youtube-bilingual",
+  "apps": [
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.common",
+      "name": "🎬 字幕设置",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_ENABLED",
+        "QXYTB_BETA_DISPLAY",
+        "QXYTB_BETA_SOURCE_LANG",
+        "QXYTB_BETA_TARGET_LANG",
+        "QXYTB_BETA_PROVIDER",
+        "QXYTB_BETA_RESPONSE_BUDGET",
+        "QXYTB_BETA_LONG_ADAPTIVE",
+        "QXYTB_BETA_LONG_START_FOUR",
+        "QXYTB_BETA_LONG_ALIGNED_RELIABLE",
+        "QXYTB_BETA_JSON_MODE",
+        "QXYTB_BETA_BYPASS_CACHE",
+        "QXYTB_BETA_CACHE_EPOCH"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_ENABLED",
+          "name": "开启字幕翻译",
+          "type": "boolean",
+          "val": true,
+          "desc": "仅控制视频字幕。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_DISPLAY",
+          "name": "字幕显示方式",
+          "type": "selects",
+          "val": "bilingual",
+          "items": [
+            {
+              "key": "bilingual",
+              "label": "双语：目标译文在上、源字幕在下"
+            },
+            {
+              "key": "source_first",
+              "label": "双语：原文在上、目标译文在下"
+            },
+            {
+              "key": "translation",
+              "label": "仅译文：只显示目标语言"
+            }
+          ]
+        },
+        {
+          "id": "QXYTB_BETA_SOURCE_LANG",
+          "name": "字幕源语言",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "自动识别"
+            },
+            {
+              "key": "zh",
+              "label": "中文"
+            },
+            {
+              "key": "en",
+              "label": "英语"
+            },
+            {
+              "key": "ja",
+              "label": "日语"
+            },
+            {
+              "key": "ko",
+              "label": "韩语"
+            },
+            {
+              "key": "fr",
+              "label": "法语"
+            },
+            {
+              "key": "ru",
+              "label": "俄语"
+            },
+            {
+              "key": "de",
+              "label": "德语"
+            },
+            {
+              "key": "pt",
+              "label": "葡萄牙语"
+            },
+            {
+              "key": "es",
+              "label": "西班牙语"
+            },
+            {
+              "key": "it",
+              "label": "意大利语"
+            },
+            {
+              "key": "hi",
+              "label": "印地语"
+            },
+            {
+              "key": "th",
+              "label": "泰语"
+            },
+            {
+              "key": "ar",
+              "label": "阿拉伯语"
+            }
+          ]
+        },
+        {
+          "id": "QXYTB_BETA_TARGET_LANG",
+          "name": "字幕目标语言",
+          "type": "selects",
+          "val": "zh",
+          "items": [
+            {
+              "key": "zh",
+              "label": "中文"
+            },
+            {
+              "key": "en",
+              "label": "英语"
+            },
+            {
+              "key": "ja",
+              "label": "日语"
+            },
+            {
+              "key": "ko",
+              "label": "韩语"
+            },
+            {
+              "key": "fr",
+              "label": "法语"
+            },
+            {
+              "key": "ru",
+              "label": "俄语"
+            },
+            {
+              "key": "de",
+              "label": "德语"
+            },
+            {
+              "key": "pt",
+              "label": "葡萄牙语"
+            },
+            {
+              "key": "es",
+              "label": "西班牙语"
+            },
+            {
+              "key": "it",
+              "label": "意大利语"
+            },
+            {
+              "key": "hi",
+              "label": "印地语"
+            },
+            {
+              "key": "th",
+              "label": "泰语"
+            },
+            {
+              "key": "ar",
+              "label": "阿拉伯语"
+            }
+          ],
+          "desc": "字幕与界面共用。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_PROVIDER",
+          "name": "翻译平台",
+          "type": "selects",
+          "val": "deepseek",
+          "items": [
+            {
+              "key": "deepseek",
+              "label": "DeepSeek"
+            },
+            {
+              "key": "volcengine",
+              "label": "火山方舟"
+            },
+            {
+              "key": "openrouter",
+              "label": "OpenRouter"
+            },
+            {
+              "key": "custom",
+              "label": "自定义 OpenAI 兼容接口 / 中转站"
+            }
+          ],
+          "desc": "字幕与界面使用所选平台，不跨平台回退。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_RESPONSE_BUDGET",
+          "name": "字幕等待时间（秒）",
+          "type": "text",
+          "val": "6.3",
+          "desc": "3–10 秒，默认 6.3 秒；控制字幕请求最长等待。",
+          "inputmode": "decimal",
+          "min": 3,
+          "max": 10,
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_LONG_ADAPTIVE",
+          "name": "高级 · 长视频自适应批次",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_LONG_START_FOUR",
+          "name": "高级 · 长视频 4 单元起步",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_LONG_ALIGNED_RELIABLE",
+          "name": "高级 · 长句可靠分段",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_JSON_MODE",
+          "name": "高级 · JSON 输出模式",
+          "desc": "字幕与界面共用；不兼容时选择关闭。",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "自动：按平台预设"
+            },
+            {
+              "key": "on",
+              "label": "开启：发送 response_format=json_object"
+            },
+            {
+              "key": "off",
+              "label": "关闭：省略 response_format"
+            }
+          ]
+        },
+        {
+          "id": "QXYTB_BETA_BYPASS_CACHE",
+          "name": "高级 · 绕过译文缓存（调试）",
+          "type": "boolean",
+          "val": false
+        },
+        {
+          "id": "QXYTB_BETA_CACHE_EPOCH",
+          "name": "高级 · 缓存版本（谨慎修改）",
+          "type": "text",
+          "val": "1",
+          "desc": "修改后不再复用旧字幕缓存，通常无需调整。",
+          "persistent-hint": true,
+          "hide-details": false
+        }
+      ]
+    },
+    {
+      "name": "🪟 界面翻译",
+      "settings": [
+        {
+          "id": "QXYTB_BETA_UI_ENABLED",
+          "name": "启用界面翻译",
+          "type": "boolean",
+          "val": true,
+          "desc": "关闭不影响字幕与去广告；频道名、播放量、发布时间保持原样。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_UI_HOME",
+          "name": "首页、搜索与频道",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_WATCH",
+          "name": "播放页与推荐",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_DESCRIPTION",
+          "name": "视频简介",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_SHORTS",
+          "name": "Shorts",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_COMMENTS",
+          "name": "评论与回复",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_CHANNEL",
+          "name": "频道简介",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_POSTS",
+          "name": "帖子",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_PLAYLIST",
+          "name": "播放列表与说明",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_HISTORY",
+          "name": "历史记录列表",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_CLEAR_ALL_CACHE",
+          "name": "清空全部翻译缓存（一次）",
+          "type": "boolean",
+          "val": false,
+          "desc": "保存后下次 YouTube 请求执行，成功自动复位；保留 Key 和设置。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_UI_CACHE",
+          "name": "当前语言 · 界面缓存",
+          "type": "selects",
+          "val": "on",
+          "items": [
+            {
+              "key": "on",
+              "label": "开启"
+            },
+            {
+              "key": "off",
+              "label": "关闭"
+            },
+            {
+              "key": "clear",
+              "label": "清空当前语言"
+            }
+          ],
+          "desc": "选择清空后，请手动改回开启。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_UI_CONTENT_CACHE",
+          "name": "当前语言 · 评论与简介缓存",
+          "type": "selects",
+          "val": "on",
+          "items": [
+            {
+              "key": "on",
+              "label": "开启"
+            },
+            {
+              "key": "off",
+              "label": "关闭"
+            },
+            {
+              "key": "clear",
+              "label": "清空当前语言"
+            }
+          ],
+          "desc": "选择清空后，请手动改回开启。",
+          "persistent-hint": true,
+          "hide-details": false
+        }
+      ],
+      "id": "qutary.youtube-bilingual.beta2.ui-category",
+      "keys": [
+        "QXYTB_BETA_UI_ENABLED",
+        "QXYTB_BETA_UI_HOME",
+        "QXYTB_BETA_UI_WATCH",
+        "QXYTB_BETA_UI_DESCRIPTION",
+        "QXYTB_BETA_UI_SHORTS",
+        "QXYTB_BETA_UI_COMMENTS",
+        "QXYTB_BETA_UI_CHANNEL",
+        "QXYTB_BETA_UI_POSTS",
+        "QXYTB_BETA_UI_PLAYLIST",
+        "QXYTB_BETA_UI_HISTORY",
+        "QXYTB_BETA_UI_CACHE",
+        "QXYTB_BETA_UI_CONTENT_CACHE",
+        "QXYTB_BETA_CLEAR_ALL_CACHE"
+      ],
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual"
+    },
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.deepseek",
+      "name": "🔷 DeepSeek · 服务配置",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_DEEPSEEK_KEY",
+        "QXYTB_BETA_DEEPSEEK_MODEL",
+        "QXYTB_BETA_DEEPSEEK_CONCURRENCY",
+        "QXYTB_BETA_DEEPSEEK_ENDPOINT"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_KEY",
+          "name": "API Key",
+          "type": "text",
+          "val": "",
+          "desc": "填写所选平台的 API Key。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_MODEL",
+          "name": "模型 ID",
+          "type": "text",
+          "val": "deepseek-flash",
+          "desc": "填写接口支持的模型 ID。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_CONCURRENCY",
+          "name": "并发数",
+          "type": "text",
+          "val": "20",
+          "desc": "1–256 整数，默认 20；限流时可降低。",
+          "inputmode": "numeric",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_ENDPOINT",
+          "name": "API 地址（可选）",
+          "type": "text",
+          "val": "https://api.deepseek.com/chat/completions",
+          "desc": "可保留默认；修改时填写完整 HTTPS 地址。",
+          "persistent-hint": true,
+          "hide-details": false
+        }
+      ]
+    },
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.volcengine",
+      "name": "🌋 火山方舟 · 服务配置",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_VOLCENGINE_KEY",
+        "QXYTB_BETA_VOLCENGINE_MODEL",
+        "QXYTB_BETA_VOLCENGINE_CONCURRENCY",
+        "QXYTB_BETA_VOLCENGINE_ENDPOINT",
+        "QXYTB_BETA_VOLCENGINE_FAST",
+        "QXYTB_BETA_VOLCENGINE_COMPACT_BATCH",
+        "QXYTB_BETA_VOLCENGINE_LONG_FAST_START"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_KEY",
+          "name": "API Key",
+          "type": "text",
+          "val": "",
+          "desc": "填写所选平台的 API Key。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_MODEL",
+          "name": "模型 / 接入点 ID",
+          "type": "text",
+          "val": "",
+          "desc": "填写模型或接入点 ID。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_CONCURRENCY",
+          "name": "并发数",
+          "type": "text",
+          "val": "20",
+          "desc": "1–256 整数，默认 20；限流时可降低。",
+          "inputmode": "numeric",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_ENDPOINT",
+          "name": "API 地址（可选）",
+          "type": "text",
+          "val": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+          "desc": "可保留默认；修改时填写完整 HTTPS 地址。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_FAST",
+          "name": "低延迟模式",
+          "type": "boolean",
+          "val": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_COMPACT_BATCH",
+          "name": "使用短批次",
+          "type": "boolean",
+          "val": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_LONG_FAST_START",
+          "name": "长视频快速启动",
+          "type": "boolean",
+          "val": true
+        }
+      ]
+    },
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.openrouter",
+      "name": "🌐 OpenRouter · 服务配置",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_OPENROUTER_KEY",
+        "QXYTB_BETA_OPENROUTER_MODEL",
+        "QXYTB_BETA_OPENROUTER_CONCURRENCY",
+        "QXYTB_BETA_OPENROUTER_ENDPOINT",
+        "QXYTB_BETA_OPENROUTER_SORT",
+        "QXYTB_BETA_OPENROUTER_COMPACT_BATCH",
+        "QXYTB_BETA_OPENROUTER_FAST_START"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_OPENROUTER_KEY",
+          "name": "API Key",
+          "type": "text",
+          "val": "",
+          "desc": "填写所选平台的 API Key。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_MODEL",
+          "name": "模型 ID（含提供商前缀）",
+          "type": "text",
+          "val": "",
+          "desc": "填写完整模型 ID，包含厂商前缀。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_CONCURRENCY",
+          "name": "并发数",
+          "type": "text",
+          "val": "20",
+          "desc": "1–256 整数，默认 20；限流时可降低。",
+          "inputmode": "numeric",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_ENDPOINT",
+          "name": "API 地址（可选）",
+          "type": "text",
+          "val": "https://openrouter.ai/api/v1/chat/completions",
+          "desc": "可保留默认；修改时填写完整 HTTPS 地址。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_SORT",
+          "name": "路由偏好",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "自动（默认）"
+            },
+            {
+              "key": "latency",
+              "label": "低延迟优先"
+            },
+            {
+              "key": "throughput",
+              "label": "高吞吐优先"
+            }
+          ]
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_COMPACT_BATCH",
+          "name": "使用短批次",
+          "type": "boolean",
+          "val": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_FAST_START",
+          "name": "快速启动",
+          "type": "boolean",
+          "val": true
+        }
+      ]
+    },
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.custom",
+      "name": "🔌 自定义 API · 服务配置",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_CUSTOM_KEY",
+        "QXYTB_BETA_CUSTOM_MODEL",
+        "QXYTB_BETA_CUSTOM_ENDPOINT",
+        "QXYTB_BETA_CUSTOM_CONCURRENCY"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_CUSTOM_KEY",
+          "name": "API Key",
+          "type": "text",
+          "val": "",
+          "desc": "填写所选平台的 API Key。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_MODEL",
+          "name": "模型 ID",
+          "type": "text",
+          "val": "",
+          "desc": "填写接口支持的模型 ID。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_ENDPOINT",
+          "name": "API 地址",
+          "type": "text",
+          "val": "",
+          "desc": "填写完整 HTTPS Chat Completions 地址。",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_CONCURRENCY",
+          "name": "并发数",
+          "type": "text",
+          "val": "20",
+          "desc": "1–256 整数，默认 20；限流时可降低。",
+          "inputmode": "numeric",
+          "persistent-hint": true,
+          "hide-details": false
+        }
+      ]
+    }
+  ]
+}

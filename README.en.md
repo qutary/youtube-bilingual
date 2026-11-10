@@ -10,7 +10,7 @@ Official YouTube app on iPhone / iPad · Quantumult X / Shadowrocket · Your own
 
 </div>
 
-> Current stable release: **v2.0.0** (2026-11-10). [Release notes](releases/v2.0.0.md) · [Previous versions](https://github.com/qutary/youtube-bilingual/releases).
+> Current stable release: **v2.1.0** (2026-11-10). [Release notes](releases/v2.1.0.md) · [Previous versions](https://github.com/qutary/youtube-bilingual/releases).
 
 ## What it does
 
@@ -125,6 +125,8 @@ Interface translation is enabled by default. Turn off any unwanted categories un
 
 ### Choose an API service
 
+**DeepSeek is recommended.** You can also use an existing Volcengine Ark, OpenRouter or custom API account.
+
 | Service | Required settings | Translates |
 | --- | --- | --- |
 | [DeepSeek](https://platform.deepseek.com/) | API key and model ID | Captions and interface text |
@@ -146,13 +148,14 @@ Captions and interface translation use the selected service's settings. A failed
 | Interface text only | Turn off video caption translation |
 | Fewer types of translated content | Turn off the relevant interface category |
 
-Captions and interface text share the display mode. Turning either translation feature off leaves the other feature and integrated ad filtering active.
+Captions and interface text share the display mode. Turning either translation feature off leaves the other feature and integrated ad filtering active. Channel names, view counts and publication dates remain unchanged and are not sent for translation; no new toggle is needed. Channel biographies can still be translated.
 
 <details>
 <summary>Advanced: concurrency, wait budget and cache</summary>
 
 - **Concurrent requests**: default 20 per service; integers 1–256. Caption and interface queues each use the selected service's setting. Reduce it if rate-limited; higher is not always faster.
 - **Caption wait budget**: default 6.3 seconds; range 3–10 seconds. This limits script processing, excludes the upstream YouTube network time, and does not control the interface translation deadline.
+- **Reasoning policy**: automatic across all four services, with no toggle. Reasoning stays off when possible; required models use the lowest identifiable supported effort. If the API provides insufficient capability information, original text is preserved rather than enabling a potentially high effort. Previous reasoning settings are ignored.
 - **JSON output mode**: leave on Auto unless you have a specific reason to change it. Turn it off if your model rejects the parameter.
 - **Translation cache**: completed results can be reused on later requests. Interface entries are separated by target language, service, endpoint and model. Switching service or target does not require clearing all caches first.
 - **Clear cache**: enable **Clear all translation cache (once)** and save. It runs on the next YouTube request and resets after success, keeping your key and other settings. The two current-language clearing options must be switched back to On manually.
@@ -163,7 +166,7 @@ Clearing the cache does not refresh pages or captions already loaded by YouTube.
 
 ## Updates and rollback
 
-**Update both the project module/rewrite and the BoxJS subscription, keeping saved data.** This page provides stable subscription URLs that can be refreshed for future updates. If you use an older test URL, replace it with the URL on this page first.
+**Update both the project module/rewrite and the BoxJS subscription, keeping saved data.** This page provides stable subscription URLs that can be refreshed for updates. Replace older test URLs with the URLs on this page first.
 
 Older Shadowrocket module arguments are not imported into BoxJS automatically. When switching for the first time, save your original key, model and other settings in Shadowrocket's BoxJS. Existing values in that app's BoxJS can be reused. Changing between Chinese and English settings does not require entering your key again.
 

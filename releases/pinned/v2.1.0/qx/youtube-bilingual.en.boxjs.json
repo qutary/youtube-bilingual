@@ -1,0 +1,681 @@
+{
+  "id": "qutary.youtube-bilingual.shared.en",
+  "name": "YouTube Bilingual v2.1.0 (English)",
+  "author": "@qutary",
+  "description": "Shared settings for Quantumult X and Shadowrocket",
+  "repo": "https://github.com/qutary/youtube-bilingual",
+  "apps": [
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.common.en",
+      "name": "🎬 Caption settings",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_ENABLED",
+        "QXYTB_BETA_DISPLAY",
+        "QXYTB_BETA_SOURCE_LANG",
+        "QXYTB_BETA_TARGET_LANG",
+        "QXYTB_BETA_PROVIDER",
+        "QXYTB_BETA_RESPONSE_BUDGET",
+        "QXYTB_BETA_LONG_ADAPTIVE",
+        "QXYTB_BETA_LONG_START_FOUR",
+        "QXYTB_BETA_LONG_ALIGNED_RELIABLE",
+        "QXYTB_BETA_JSON_MODE",
+        "QXYTB_BETA_BYPASS_CACHE",
+        "QXYTB_BETA_CACHE_EPOCH"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_ENABLED",
+          "name": "Translate video captions",
+          "type": "boolean",
+          "val": true,
+          "desc": "Only affects video captions.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_DISPLAY",
+          "name": "Text display mode",
+          "type": "selects",
+          "val": "bilingual",
+          "items": [
+            {
+              "key": "bilingual",
+              "label": "Bilingual: translation above original"
+            },
+            {
+              "key": "source_first",
+              "label": "Bilingual: original above translation"
+            },
+            {
+              "key": "translation",
+              "label": "Translation only"
+            }
+          ]
+        },
+        {
+          "id": "QXYTB_BETA_SOURCE_LANG",
+          "name": "Caption source language",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "Auto-detect"
+            },
+            {
+              "key": "zh",
+              "label": "Chinese"
+            },
+            {
+              "key": "en",
+              "label": "English"
+            },
+            {
+              "key": "ja",
+              "label": "Japanese"
+            },
+            {
+              "key": "ko",
+              "label": "Korean"
+            },
+            {
+              "key": "fr",
+              "label": "French"
+            },
+            {
+              "key": "ru",
+              "label": "Russian"
+            },
+            {
+              "key": "de",
+              "label": "German"
+            },
+            {
+              "key": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "key": "es",
+              "label": "Spanish"
+            },
+            {
+              "key": "it",
+              "label": "Italian"
+            },
+            {
+              "key": "hi",
+              "label": "Hindi"
+            },
+            {
+              "key": "th",
+              "label": "Thai"
+            },
+            {
+              "key": "ar",
+              "label": "Arabic"
+            }
+          ]
+        },
+        {
+          "id": "QXYTB_BETA_TARGET_LANG",
+          "name": "Target language",
+          "type": "selects",
+          "val": "zh",
+          "items": [
+            {
+              "key": "zh",
+              "label": "Chinese"
+            },
+            {
+              "key": "en",
+              "label": "English"
+            },
+            {
+              "key": "ja",
+              "label": "Japanese"
+            },
+            {
+              "key": "ko",
+              "label": "Korean"
+            },
+            {
+              "key": "fr",
+              "label": "French"
+            },
+            {
+              "key": "ru",
+              "label": "Russian"
+            },
+            {
+              "key": "de",
+              "label": "German"
+            },
+            {
+              "key": "pt",
+              "label": "Portuguese"
+            },
+            {
+              "key": "es",
+              "label": "Spanish"
+            },
+            {
+              "key": "it",
+              "label": "Italian"
+            },
+            {
+              "key": "hi",
+              "label": "Hindi"
+            },
+            {
+              "key": "th",
+              "label": "Thai"
+            },
+            {
+              "key": "ar",
+              "label": "Arabic"
+            }
+          ],
+          "desc": "Used for captions and interface text.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_PROVIDER",
+          "name": "Translation service",
+          "type": "selects",
+          "val": "deepseek",
+          "items": [
+            {
+              "key": "deepseek",
+              "label": "DeepSeek"
+            },
+            {
+              "key": "volcengine",
+              "label": "Volcengine Ark"
+            },
+            {
+              "key": "openrouter",
+              "label": "OpenRouter"
+            },
+            {
+              "key": "custom",
+              "label": "Custom OpenAI-compatible API"
+            }
+          ],
+          "desc": "Captions and interface use the selected service; no cross-service fallback.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_RESPONSE_BUDGET",
+          "name": "Caption wait budget (seconds)",
+          "type": "text",
+          "val": "6.3",
+          "desc": "3–10 s; default 6.3. Caption processing limit.",
+          "inputmode": "decimal",
+          "min": 3,
+          "max": 10,
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_LONG_ADAPTIVE",
+          "name": "Advanced: adaptive long-video batches",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_LONG_START_FOUR",
+          "name": "Advanced: 4-unit long-video start",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_LONG_ALIGNED_RELIABLE",
+          "name": "Advanced: reliable long-sentence splitting",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_JSON_MODE",
+          "name": "Advanced: JSON response mode",
+          "desc": "Shared by captions and interface; turn off if unsupported.",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "Auto (service preset)"
+            },
+            {
+              "key": "on",
+              "label": "On: request JSON object responses"
+            },
+            {
+              "key": "off",
+              "label": "Off: omit response_format"
+            }
+          ]
+        },
+        {
+          "id": "QXYTB_BETA_BYPASS_CACHE",
+          "name": "Advanced: bypass translation cache",
+          "type": "boolean",
+          "val": false
+        },
+        {
+          "id": "QXYTB_BETA_CACHE_EPOCH",
+          "name": "Advanced: cache version",
+          "type": "text",
+          "val": "1",
+          "desc": "Changing this invalidates old caption cache. Usually leave unchanged.",
+          "persistent-hint": true,
+          "hide-details": false
+        }
+      ]
+    },
+    {
+      "name": "🪟 Interface translation",
+      "settings": [
+        {
+          "id": "QXYTB_BETA_UI_ENABLED",
+          "name": "Translate interface text",
+          "type": "boolean",
+          "val": true,
+          "desc": "Turning off keeps captions and ad filtering active. Channel names, view counts and dates stay unchanged.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_UI_HOME",
+          "name": "Home, search and channels",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_WATCH",
+          "name": "Watch page and recommendations",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_DESCRIPTION",
+          "name": "Video descriptions",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_SHORTS",
+          "name": "Shorts",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_COMMENTS",
+          "name": "Comments and replies",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_CHANNEL",
+          "name": "Channel descriptions",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_POSTS",
+          "name": "Community posts",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_PLAYLIST",
+          "name": "Playlists and descriptions",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_UI_HISTORY",
+          "name": "Watch history list",
+          "type": "boolean",
+          "val": true
+        },
+        {
+          "id": "QXYTB_BETA_CLEAR_ALL_CACHE",
+          "name": "Clear all translation cache (once)",
+          "type": "boolean",
+          "val": false,
+          "desc": "Runs on the next YouTube request, then resets. Keeps keys and settings.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_UI_CACHE",
+          "name": "Interface cache (current language)",
+          "type": "selects",
+          "val": "on",
+          "items": [
+            {
+              "key": "on",
+              "label": "On"
+            },
+            {
+              "key": "off",
+              "label": "Off"
+            },
+            {
+              "key": "clear",
+              "label": "Clear current language"
+            }
+          ],
+          "desc": "After clearing, switch back to On.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_UI_CONTENT_CACHE",
+          "name": "Comment/description cache (current language)",
+          "type": "selects",
+          "val": "on",
+          "items": [
+            {
+              "key": "on",
+              "label": "On"
+            },
+            {
+              "key": "off",
+              "label": "Off"
+            },
+            {
+              "key": "clear",
+              "label": "Clear current language"
+            }
+          ],
+          "desc": "After clearing, switch back to On.",
+          "persistent-hint": true,
+          "hide-details": false
+        }
+      ],
+      "id": "qutary.youtube-bilingual.beta2.ui-category.en",
+      "keys": [
+        "QXYTB_BETA_UI_ENABLED",
+        "QXYTB_BETA_UI_HOME",
+        "QXYTB_BETA_UI_WATCH",
+        "QXYTB_BETA_UI_DESCRIPTION",
+        "QXYTB_BETA_UI_SHORTS",
+        "QXYTB_BETA_UI_COMMENTS",
+        "QXYTB_BETA_UI_CHANNEL",
+        "QXYTB_BETA_UI_POSTS",
+        "QXYTB_BETA_UI_PLAYLIST",
+        "QXYTB_BETA_UI_HISTORY",
+        "QXYTB_BETA_UI_CACHE",
+        "QXYTB_BETA_UI_CONTENT_CACHE",
+        "QXYTB_BETA_CLEAR_ALL_CACHE"
+      ],
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual"
+    },
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.deepseek.en",
+      "name": "🔷 DeepSeek",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_DEEPSEEK_KEY",
+        "QXYTB_BETA_DEEPSEEK_MODEL",
+        "QXYTB_BETA_DEEPSEEK_CONCURRENCY",
+        "QXYTB_BETA_DEEPSEEK_ENDPOINT"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_KEY",
+          "name": "API Key",
+          "type": "text",
+          "val": "",
+          "desc": "Enter your provider's API key.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_MODEL",
+          "name": "Model ID",
+          "type": "text",
+          "val": "deepseek-flash",
+          "desc": "Enter a model ID supported by this API.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_CONCURRENCY",
+          "name": "Concurrent requests",
+          "type": "text",
+          "val": "20",
+          "desc": "Integer 1–256; default 20. Lower it if rate-limited.",
+          "inputmode": "numeric",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_DEEPSEEK_ENDPOINT",
+          "name": "API endpoint (optional)",
+          "type": "text",
+          "val": "https://api.deepseek.com/chat/completions",
+          "desc": "Keep the default, or enter a full HTTPS endpoint.",
+          "persistent-hint": true,
+          "hide-details": false
+        }
+      ]
+    },
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.volcengine.en",
+      "name": "🌋 Volcengine Ark",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_VOLCENGINE_KEY",
+        "QXYTB_BETA_VOLCENGINE_MODEL",
+        "QXYTB_BETA_VOLCENGINE_CONCURRENCY",
+        "QXYTB_BETA_VOLCENGINE_ENDPOINT",
+        "QXYTB_BETA_VOLCENGINE_FAST",
+        "QXYTB_BETA_VOLCENGINE_COMPACT_BATCH",
+        "QXYTB_BETA_VOLCENGINE_LONG_FAST_START"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_KEY",
+          "name": "API Key",
+          "type": "text",
+          "val": "",
+          "desc": "Enter your provider's API key.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_MODEL",
+          "name": "Model / endpoint ID",
+          "type": "text",
+          "val": "",
+          "desc": "Enter a model ID or inference endpoint ID.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_CONCURRENCY",
+          "name": "Concurrent requests",
+          "type": "text",
+          "val": "20",
+          "desc": "Integer 1–256; default 20. Lower it if rate-limited.",
+          "inputmode": "numeric",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_ENDPOINT",
+          "name": "API endpoint (optional)",
+          "type": "text",
+          "val": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+          "desc": "Keep the default, or enter a full HTTPS endpoint.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_FAST",
+          "name": "Low-latency mode",
+          "type": "boolean",
+          "val": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_COMPACT_BATCH",
+          "name": "Use smaller batches",
+          "type": "boolean",
+          "val": false
+        },
+        {
+          "id": "QXYTB_BETA_VOLCENGINE_LONG_FAST_START",
+          "name": "Fast start for long videos",
+          "type": "boolean",
+          "val": true
+        }
+      ]
+    },
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.openrouter.en",
+      "name": "🌐 OpenRouter",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_OPENROUTER_KEY",
+        "QXYTB_BETA_OPENROUTER_MODEL",
+        "QXYTB_BETA_OPENROUTER_CONCURRENCY",
+        "QXYTB_BETA_OPENROUTER_ENDPOINT",
+        "QXYTB_BETA_OPENROUTER_SORT",
+        "QXYTB_BETA_OPENROUTER_COMPACT_BATCH",
+        "QXYTB_BETA_OPENROUTER_FAST_START"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_OPENROUTER_KEY",
+          "name": "API Key",
+          "type": "text",
+          "val": "",
+          "desc": "Enter your provider's API key.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_MODEL",
+          "name": "Model ID (including provider prefix)",
+          "type": "text",
+          "val": "",
+          "desc": "Enter the full model ID, including its provider prefix.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_CONCURRENCY",
+          "name": "Concurrent requests",
+          "type": "text",
+          "val": "20",
+          "desc": "Integer 1–256; default 20. Lower it if rate-limited.",
+          "inputmode": "numeric",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_ENDPOINT",
+          "name": "API endpoint (optional)",
+          "type": "text",
+          "val": "https://openrouter.ai/api/v1/chat/completions",
+          "desc": "Keep the default, or enter a full HTTPS endpoint.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_SORT",
+          "name": "Routing preference",
+          "type": "selects",
+          "val": "auto",
+          "items": [
+            {
+              "key": "auto",
+              "label": "Auto (default)"
+            },
+            {
+              "key": "latency",
+              "label": "Prefer low latency"
+            },
+            {
+              "key": "throughput",
+              "label": "Prefer throughput"
+            }
+          ]
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_COMPACT_BATCH",
+          "name": "Use smaller batches",
+          "type": "boolean",
+          "val": false
+        },
+        {
+          "id": "QXYTB_BETA_OPENROUTER_FAST_START",
+          "name": "Fast start",
+          "type": "boolean",
+          "val": true
+        }
+      ]
+    },
+    {
+      "id": "qutary.youtube-bilingual.langpair-v5.custom.en",
+      "name": "🔌 Custom API",
+      "author": "@qutary",
+      "repo": "https://github.com/qutary/youtube-bilingual",
+      "keys": [
+        "QXYTB_BETA_CUSTOM_KEY",
+        "QXYTB_BETA_CUSTOM_MODEL",
+        "QXYTB_BETA_CUSTOM_ENDPOINT",
+        "QXYTB_BETA_CUSTOM_CONCURRENCY"
+      ],
+      "settings": [
+        {
+          "id": "QXYTB_BETA_CUSTOM_KEY",
+          "name": "API Key",
+          "type": "text",
+          "val": "",
+          "desc": "Enter your provider's API key.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_MODEL",
+          "name": "Model ID",
+          "type": "text",
+          "val": "",
+          "desc": "Enter a model ID supported by this API.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_ENDPOINT",
+          "name": "API endpoint",
+          "type": "text",
+          "val": "",
+          "desc": "Enter a full HTTPS Chat Completions endpoint.",
+          "persistent-hint": true,
+          "hide-details": false
+        },
+        {
+          "id": "QXYTB_BETA_CUSTOM_CONCURRENCY",
+          "name": "Concurrent requests",
+          "type": "text",
+          "val": "20",
+          "desc": "Integer 1–256; default 20. Lower it if rate-limited.",
+          "inputmode": "numeric",
+          "persistent-hint": true,
+          "hide-details": false
+        }
+      ]
+    }
+  ]
+}
